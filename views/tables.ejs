@@ -1,0 +1,18 @@
+<!-- C:\Users\danda\OneDrive\Documents\Desktop\GIT-online\BACKEND\BACKEND-DEVLOPEMENT\RESTAURENT\views\index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Selection</title>
+</head>
+<body>
+    <h1>Select a Table</h1>
+    <div>
+        <% for (let table = 1; table <= 5; table++) { %>
+            <button onclick="window.location.href='http://localhost:3000/t/<%= table %>'">Table <%= table %></button>
+        <% } %>
+    </div>
+</body>
+</html>

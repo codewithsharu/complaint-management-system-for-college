@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+
+    <% tablesData.forEach((table, index) => { %>
+        <% const totalCount = table.reduce((acc, cur) => acc + cur.count, 0); %>
+        <% if (totalCount > 0) { %>
+            <h2>Table <%= index + 1 %></h2>
+            <table>
+                <tr>
+                    <th>Dish Name</th>
+                    <th>Count</th>
+                </tr>
+                <% table.forEach(row => { %>
+                    <% if (row.count > 0) { %>
+                        <tr>
+                            <td><%= row.dish_name %></td>
+                            <td><%= row.count %></td>
+                        </tr>
+                    <% } %>
+                <% }); %>
+            </table>
+            <form action="/order_completed" method="post">
+                <input type="hidden" name="tableNumber" value="<%= index + 1 %>">
+                <button type="submit">Mark Order as Completed</button>
+            </form>
+        <% } else { %>
+            <p>No data available for Table <%= index + 1 %>.</p>
+        <% } %>
+    <% }); %>
+</body>
+</html>
