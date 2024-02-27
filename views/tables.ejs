@@ -1,17 +1,46 @@
-<!-- C:\Users\danda\OneDrive\Documents\Desktop\GIT-online\BACKEND\BACKEND-DEVLOPEMENT\RESTAURENT\views\index.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Table Selection</title>
+    <style>
+        .card {
+            display: inline-block;
+            width: 200px;
+            height: 150px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 10px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card button {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+        }
+    </style>
 </head>
 <body>
     <h1>Select a Table</h1>
     <div>
         <% for (let table = 1; table <= 5; table++) { %>
-            <button onclick="window.location.href='http://localhost:3000/t/<%= table %>'">Table <%= table %></button>
+            <div class="card">
+                <button onclick="window.location.href='http://localhost:3000/t/<%= table %>'">Table <%= table %></button>
+            </div>
         <% } %>
     </div>
 </body>

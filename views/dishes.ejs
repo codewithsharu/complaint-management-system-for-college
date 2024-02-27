@@ -1,23 +1,69 @@
-<!-- dishes.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Table <%= tableNumber %> - Select Dishes</title>
+    <style>
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 300px;
+        }
+        .card img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
     <h1>Select Dishes for Table <%= tableNumber %></h1>
 
     <form action="/order" method="post">
         <input type="hidden" name="tableNumber" value="<%= tableNumber %>">
-        <label for="selectedDishes">Select Dishes:</label><br>
-        <input type="checkbox" name="selectedDishes" value="Pizza"> Pizza<br>
-        <input type="checkbox" name="selectedDishes" value="Biryani"> Biryani<br>
-        <input type="checkbox" name="selectedDishes" value="Alu Parota"> Alu Parota<br>
-        <input type="checkbox" name="selectedDishes" value="Daal"> Daal<br>
-        <input type="checkbox" name="selectedDishes" value="Veg Fry"> Veg Fry<br><br>
+
+        <div class="card">
+            <label for="pizza">
+                <img src="https://img.hotimg.com/pizza.jpeg" alt="Pizza">
+                <br>
+                <input type="checkbox" id="pizza" name="selectedDishes" value="Pizza"> Pizza
+            </label>
+        </div>
+
+        <div class="card">
+            <label for="biryani">
+                <img src="../public/images/biryani.jpg" alt="Biryani">
+                <br>
+                <input type="checkbox" id="biryani" name="selectedDishes" value="Biryani"> Biryani
+            </label>
+        </div>
+
+        <div class="card">
+            <label for="aluParota">
+                <img src="alu_parota_image.jpg" alt="Alu Parota">
+                <br>
+                <input type="checkbox" id="aluParota" name="selectedDishes" value="Alu Parota"> Alu Parota
+            </label>
+        </div>
+
+        <div class="card">
+            <label for="daal">
+                <img src="daal_image.jpg" alt="Daal">
+                <br>
+                <input type="checkbox" id="daal" name="selectedDishes" value="Daal"> Daal
+            </label>
+        </div>
+
+        <div class="card">
+            <label for="vegFry">
+                <img src="veg_fry_image.jpg" alt="Veg Fry">
+                <br>
+                <input type="checkbox" id="vegFry" name="selectedDishes" value="Veg Fry"> Veg Fry
+            </label>
+        </div>
+
         <button type="submit">Place Order</button>
     </form>
 </body>
