@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint Form</title>
+</head>
+<body>
+    <h1>Table <%= tableNumber %> - Complaint Form</h1>
+    <form action="/submit_complaint" method="post">
+        <input type="hidden" name="tableNumber" value="<%= tableNumber %>">
+        <label for="rollNumber">Enter Roll Number:</label>
+        <input type="text" id="rollNumber" name="rollNumber" required>
+        <br>
+        <label for="complaintMessage">Enter Complaint:</label>
+        <textarea id="complaintMessage" name="complaintMessage" rows="4" cols="50" required></textarea>
+        <br>
+        <button type="submit">Submit Complaint</button>
+    </form>
+</body>
+</html>

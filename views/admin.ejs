@@ -7,31 +7,19 @@
 </head>
 <body>
     <h1>Admin Panel</h1>
-
-    <% tablesData.forEach((table, index) => { %>
-        <% const totalCount = table.reduce((acc, cur) => acc + cur.count, 0); %>
-        <% if (totalCount > 0) { %>
-            <h2>Table <%= index + 1 %></h2>
-            <table>
-                <tr>
-                    <th>Dish Name</th>
-                    <th>Count</th>
-                </tr>
-                <% table.forEach(row => { %>
-                    <% if (row.count > 0) { %>
-                        <tr>
-                            <td><%= row.dish_name %></td>
-                            <td><%= row.count %></td>
-                        </tr>
-                    <% } %>
+    <h2>Tables</h2>
+    <% tablesData.forEach(table => { %>
+        <h3>Table <%= table.number %></h3>
+        <% const complaints = complaintsData.filter(complaint => complaint.table_number === table.number); %>
+        <% if (complaints.length > 0) { %>
+            <h4>Complaints:</h4>
+            <ul>
+                <% complaints.forEach(complaint => { %>
+                    <li><%= complaint.message %></li>
                 <% }); %>
-            </table>
-            <form action="/order_completed" method="post">
-                <input type="hidden" name="tableNumber" value="<%= index + 1 %>">
-                <button type="submit">Mark Order as Completed</button>
-            </form>
+            </ul>
         <% } else { %>
-            <p>No data available for Table <%= index + 1 %>.</p>
+            <p>No complaints for this table.</p>
         <% } %>
     <% }); %>
 </body>

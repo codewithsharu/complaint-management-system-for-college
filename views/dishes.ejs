@@ -1,3 +1,5 @@
+<!-- C:\Users\danda\OneDrive\Documents\Desktop\GIT-online\restaurant-ordering - Copy\views\dishes.ejs -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,20 +12,37 @@
             border-radius: 5px;
             padding: 10px;
             margin-bottom: 10px;
-            width: 300px;
+            width: 150px;
+            height:180px;
+            margin-left:3rem;
+
         }
         .card img {
             max-width: 100%;
             height: auto;
         }
+        .xc{
+	font-family: "DM Sans", sans-serif;
+	font-size: 12px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 700;
+	letter-spacing: 4.8px;
+	line-height: 29.6px;
+	text-decoration: none solid rgb(228, 197, 144);
+	text-align: center;
+
+	color: rgb(228, 197, 144);
+}
     </style>
 </head>
-<body>
-    <h1>Select Dishes for Table <%= tableNumber %></h1>
+<body style="background-color: black;">
+    <h1 class="xc">Select Dishes for Table <%= tableNumber %></h1>
+
 
     <form action="/order" method="post">
         <input type="hidden" name="tableNumber" value="<%= tableNumber %>">
-
+    <div class="container" style="display:flex;  color: aliceblue; ">
         <div class="card">
             <label for="pizza">
                 <img src="../public/images/pizza.jpg" alt="Pizza">
@@ -47,7 +66,8 @@
                 <input type="checkbox" id="aluParota" name="selectedDishes" value="Alu Parota"> Alu Parota
             </label>
         </div>
-
+         
+   
         <div class="card">
             <label for="daal">
                 <img src="../public/images/dal-rice.jpg" alt="Daal">
@@ -63,8 +83,11 @@
                 <input type="checkbox" id="vegFry" name="selectedDishes" value="Veg Fry"> Veg Fry
             </label>
         </div>
-
+    </div>
+    
         <button type="submit">Place Order</button>
     </form>
+
+
 </body>
 </html>
