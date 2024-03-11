@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSM Branch Complaints</title>
+</head>
+<body>
+    <h1>CSM Branch Complaints</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Roll Number</th>
+                <th>Message</th>
+                <th>Created At</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% complaints.forEach(function(complaint) { %>
+                <tr>
+                    <td><%= complaint.id %></td>
+                    <td><%= complaint.roll_number %></td>
+                    <td><%= complaint.message %></td>
+                    <td><%= complaint.created_at %></td>
+                    <td><%= complaint.status %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -152,6 +152,92 @@ app.get('/admin', (req, res) => {
     });
 });
 
+
+// Route to display complaints for CSM branch
+app.get('/csm', (req, res) => {
+    const branch = 'csm';
+    const fetchComplaintsQuery = 'SELECT * FROM csm';
+    connection.query(fetchComplaintsQuery, (err, complaints) => {
+        if (err) {
+            console.error('Error fetching complaints:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('csm', { branch: branch, complaints: complaints });
+    });
+});
+
+// Route to display complaints for CSE branch
+app.get('/cse', (req, res) => {
+    const branch = 'cse';
+    const fetchComplaintsQuery = 'SELECT * FROM cse';
+    connection.query(fetchComplaintsQuery, (err, complaints) => {
+        if (err) {
+            console.error('Error fetching complaints:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('cse', { branch: branch, complaints: complaints });
+    });
+});
+
+// Route to display complaints for EEE branch
+app.get('/eee', (req, res) => {
+    const branch = 'eee';
+    const fetchComplaintsQuery = 'SELECT * FROM eee';
+    connection.query(fetchComplaintsQuery, (err, complaints) => {
+        if (err) {
+            console.error('Error fetching complaints:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('eee', { branch: branch, complaints: complaints });
+    });
+});
+
+// Route to display complaints for ECE branch
+app.get('/ece', (req, res) => {
+    const branch = 'ece';
+    const fetchComplaintsQuery = 'SELECT * FROM ece';
+    connection.query(fetchComplaintsQuery, (err, complaints) => {
+        if (err) {
+            console.error('Error fetching complaints:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('ece', { branch: branch, complaints: complaints });
+    });
+});
+
+// Route to display complaints for Civil branch
+app.get('/civil', (req, res) => {
+    const branch = 'civil';
+    const fetchComplaintsQuery = 'SELECT * FROM civil';
+    connection.query(fetchComplaintsQuery, (err, complaints) => {
+        if (err) {
+            console.error('Error fetching complaints:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('civil', { branch: branch, complaints: complaints });
+    });
+});
+
+// Route to display complaints for MEC branch
+app.get('/mec', (req, res) => {
+    const branch = 'mec';
+    const fetchComplaintsQuery = 'SELECT * FROM mec';
+    connection.query(fetchComplaintsQuery, (err, complaints) => {
+        if (err) {
+            console.error('Error fetching complaints:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('mec', { branch: branch, complaints: complaints });
+    });
+});
+
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
