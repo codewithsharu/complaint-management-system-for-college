@@ -3,24 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <title>Admin Panel - Complaints</title>
 </head>
 <body>
-    <h1>Admin Panel</h1>
-    <h2>Tables</h2>
-    <% tablesData.forEach(table => { %>
-        <h3>Table <%= table.number %></h3>
-        <% const complaints = complaintsData.filter(complaint => complaint.table_number === table.number); %>
-        <% if (complaints.length > 0) { %>
-            <h4>Complaints:</h4>
-            <ul>
-                <% complaints.forEach(complaint => { %>
-                    <li><%= complaint.message %></li>
-                <% }); %>
-            </ul>
-        <% } else { %>
-            <p>No complaints for this table.</p>
-        <% } %>
-    <% }); %>
+    <h1>Admin Panel - Complaints</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Roll Number</th>
+                <th>Message</th>
+                <th>Created At</th>
+                <th>Status</th>
+                <th>Branch</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% complaints.forEach(function(complaint) { %>
+                <tr>
+                    <td><%= complaint.id %></td>
+                    <td><%= complaint.roll_number %></td>
+                    <td><%= complaint.message %></td>
+                    <td><%= complaint.created_at %></td>
+                    <td><%= complaint.status %></td>
+                    <td><%= complaint.branch %></td>
+                    <td>
+                        <form action="http://localhost:3000/a/<%= complaint.branch %>/<%= complaint.roll_number %>" method="get">
+                            <button type="submit">Approve</button>
+                        </form>
+                    </td>
+                    
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
 </body>
 </html>

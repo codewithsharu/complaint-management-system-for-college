@@ -6,9 +6,9 @@
     <title>Complaint Form</title>
 </head>
 <body>
-    <h1>Table <%= tableNumber %> - Complaint Form</h1>
+    <h1>BRANCH : <%= branch %> - Complaint Form</h1>
     <form action="/submit_complaint" method="post">
-        <input type="hidden" name="tableNumber" value="<%= tableNumber %>">
+        <input type="hidden" name="branch" value="<%= branch%>">
         <label for="rollNumber">Enter Roll Number:</label>
         <input type="text" id="rollNumber" name="rollNumber" required>
         <br>
