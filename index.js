@@ -76,11 +76,21 @@ app.post('/submit_complaint', (req, res) => {
             }
             
             const refId = rows[0].ref_id;
-            // Render a page to display the ref_id
-            res.render('complaint_ref_id', { refId: refId });
+
+            // Generate the QR code data URI
+            qr.toDataURL(`http://localhost:3000/c/qr/${refId}`, (err, url) => {
+                if (err) {
+                    console.error('Error generating QR code:', err);
+                    res.status(500).send('Error generating QR code');
+                } else {
+                    // Render the EJS template with the QR code URL and refId
+                    res.render('complaint_ref_id', { qrCodeUrl: url, refId: refId });
+                }
+            });
         });
     });
 });
+
 
 
 app.get('/admin', (req, res) => {
