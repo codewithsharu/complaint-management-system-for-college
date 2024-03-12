@@ -11,6 +11,7 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Reference ID</th>
                 <th>Roll Number</th>
                 <th>Message</th>
                 <th>Created At</th>
@@ -23,6 +24,7 @@
             <% complaints.forEach(function(complaint) { %>
                 <tr>
                     <td><%= complaint.id %></td>
+                    <td><%= complaint.ref_id %></td> <!-- Added reference ID column -->
                     <td><%= complaint.roll_number %></td>
                     <td><%= complaint.message %></td>
                     <td><%= complaint.created_at %></td>
@@ -33,7 +35,6 @@
                             <button type="submit">Approve</button>
                         </form>
                     </td>
-                    
                 </tr>
             <% }); %>
         </tbody>

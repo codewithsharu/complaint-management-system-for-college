@@ -1,4 +1,3 @@
-// Require necessary modules
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
@@ -6,7 +5,6 @@ const app = express();
 const port = 3000;
 const path = require("path");
 
-// Create MySQL connection
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -14,7 +12,6 @@ const connection = mysql.createConnection({
     database: 'aitamportal'
 });
 
-// Connect to MySQL
 connection.connect((err) => {
     if (err) {
         console.error('Error connecting to MySQL: ' + err.stack);
@@ -23,28 +20,22 @@ connection.connect((err) => {
     console.log('Connected to MySQL as id ' + connection.threadId);
 });
 
-// Serve static files from public directory
 app.use('/public/images/', express.static('./public/images'));
 
-// Set views directory and view engine
 app.set("views", path.join(__dirname, "/views"));
 app.set('view engine', 'ejs');
 
-// Parse request body
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Route to select a table
 app.get('/', (req, res) => {
     res.render('select_table');
 });
 
-// Route to handle table selection
 app.post('/select_table', (req, res) => {
     const branch = req.body.branch;
     res.render('complaint_form', { branch: branch });
 });
 
-// Route to handle complaint submission
 app.post('/submit_complaint', (req, res) => {
     const branch
 
@@ -56,7 +47,6 @@ app.post('/submit_complaint', (req, res) => {
     const rollNumber = req.body.rollNumber;
     const complaintMessage = req.body.complaintMessage;
 
-    // Insert the complaint into the database
     const insertComplaintQuery = `INSERT INTO complaints (branch, roll_number, message) VALUES (?, ?, ?)`;
     connection.query(insertComplaintQuery, [branch
 
@@ -71,9 +61,7 @@ app.post('/submit_complaint', (req, res) => {
     });
 });
 
-// Route to display admin panel// Route to display admin panel
 app.get('/admin', (req, res) => {
-    // Fetch complaints data from the database
     const fetchComplaintsQuery = 'SELECT * FROM complaints';
     connection.query(fetchComplaintsQuery, (err, complaints) => {
       if (err) {
@@ -81,17 +69,14 @@ app.get('/admin', (req, res) => {
         res.status(500).send('Internal Server Error');
         return;
       }
-      // Render the admin.ejs file with complaints data
       res.render('admin', { complaints: complaints });
     });
   });
 
-  // GET API endpoint to redirect with branch and roll parameters
   app.get('/a/:branch/:roll', (req, res) => {
     const branch = req.params.branch;
     const rollNumber = req.params.roll;
     
-    // Determine the table name based on the branch
     let tableName = '';
     switch(branch) {
         case 'csm':
@@ -116,7 +101,6 @@ app.get('/admin', (req, res) => {
             return res.status(400).send('Invalid branch');
     }
 
-    // Move data from complaints table to the respective branch table
     const selectQuery = `SELECT * FROM complaints WHERE branch = ? AND roll_number = ?`;
     connection.query(selectQuery, [branch, rollNumber], (err, results) => {
         if(err) {
@@ -137,7 +121,6 @@ app.get('/admin', (req, res) => {
                 return res.status(500).send('Error moving complaints to branch table');
             }
 
-            // Delete the complaints from the complaints table
             const deleteQuery = `DELETE FROM complaints WHERE branch = ? AND roll_number = ?`;
             connection.query(deleteQuery, [branch, rollNumber], (err, result) => {
                 if(err) {
@@ -146,14 +129,13 @@ app.get('/admin', (req, res) => {
                 }
 
                 console.log('Complaints moved successfully');
-                res.send("sucess");
+                res.redirect('/admin');
             });
         });
     });
 });
 
 
-// Route to display complaints for CSM branch
 app.get('/csm', (req, res) => {
     const branch = 'csm';
     const fetchComplaintsQuery = 'SELECT * FROM csm';
@@ -167,7 +149,6 @@ app.get('/csm', (req, res) => {
     });
 });
 
-// Route to display complaints for CSE branch
 app.get('/cse', (req, res) => {
     const branch = 'cse';
     const fetchComplaintsQuery = 'SELECT * FROM cse';
@@ -181,7 +162,6 @@ app.get('/cse', (req, res) => {
     });
 });
 
-// Route to display complaints for EEE branch
 app.get('/eee', (req, res) => {
     const branch = 'eee';
     const fetchComplaintsQuery = 'SELECT * FROM eee';
@@ -195,7 +175,6 @@ app.get('/eee', (req, res) => {
     });
 });
 
-// Route to display complaints for ECE branch
 app.get('/ece', (req, res) => {
     const branch = 'ece';
     const fetchComplaintsQuery = 'SELECT * FROM ece';
@@ -209,7 +188,6 @@ app.get('/ece', (req, res) => {
     });
 });
 
-// Route to display complaints for Civil branch
 app.get('/civil', (req, res) => {
     const branch = 'civil';
     const fetchComplaintsQuery = 'SELECT * FROM civil';
@@ -223,7 +201,6 @@ app.get('/civil', (req, res) => {
     });
 });
 
-// Route to display complaints for MEC branch
 app.get('/mec', (req, res) => {
     const branch = 'mec';
     const fetchComplaintsQuery = 'SELECT * FROM mec';
@@ -238,7 +215,6 @@ app.get('/mec', (req, res) => {
 });
 
 
-// Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

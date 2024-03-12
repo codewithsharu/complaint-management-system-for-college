@@ -1,12 +1,13 @@
+<!-- views/admin.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSM Branch Complaints</title>
+    <title>Admin Panel - Complaints</title>
 </head>
 <body>
-    <h1>CSM Branch Complaints</h1>
+    <h1>Admin Panel - Complaints</h1>
     <table border="1">
         <thead>
             <tr>
@@ -15,6 +16,8 @@
                 <th>Message</th>
                 <th>Created At</th>
                 <th>Status</th>
+                <th>Branch</th>
+                <th>Action</th> <!-- Added column for action -->
             </tr>
         </thead>
         <tbody>
@@ -25,6 +28,16 @@
                     <td><%= complaint.message %></td>
                     <td><%= complaint.created_at %></td>
                     <td><%= complaint.status %></td>
+                    <td><%= complaint.branch %></td>
+                    <td>
+                        <% if (complaint.status !== 'solved') { %>
+                            <form action="/mark_as_solved/<%= complaint.id %>" method="POST">
+                                <button type="submit">Mark as Solved</button>
+                            </form>
+                        <% } else { %>
+                            <span>Solved</span>
+                        <% } %>
+                    </td>
                 </tr>
             <% }); %>
         </tbody>
