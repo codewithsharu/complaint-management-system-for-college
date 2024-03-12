@@ -16,8 +16,8 @@
             background-color: #fff;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            height: 450px;
+            box-shadow: 2px 2px 8px rgba(54,58,64,.2);
+                        height: 450px;
             width: 500px;
             margin-top: 50px;
             margin-bottom: 50px;
@@ -48,9 +48,19 @@
             font-weight: bold;
         }
 
-        #qrcode {
-            margin-top: 20px;
-            text-align: center;
+        .qr-code {
+            position: relative;
+            max-width: 150px; 
+        }
+
+        .copy-button {
+            cursor: pointer;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 8px;
         }
     </style>
 </head>
@@ -64,7 +74,8 @@
                     <hr>
                     <!-- Insert reference ID dynamically -->
                     <div class="d-flex justify-content-between mt-1">
-                        <span class="font-weight-bold">Reference ID: <%= refId %></span>
+                        <span style="color:red; font-weight:400;">Reference ID:</span> <span id="refId"><%= refId %></span>
+                        <button class="copy-button" onclick="copyToClipboard()">Copy</button>
                     </div>
                     <br>
                     <br>
@@ -81,13 +92,36 @@
                             <span>Call - 989898989</span>
                         </div>
                     </div>
-                    <div>
-                        <img src="<%= qrCodeUrl %>" alt="QR Code">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="color:navy;" id="dateTime"></span>
+                        <img class="qr-code" src="<%= qrCodeUrl %>" alt="QR Code">
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <script>
+        function copyToClipboard() {
+            var refId = document.getElementById('refId');
+            var range = document.createRange();
+            range.selectNode(refId);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            alert('Reference ID copied to clipboard: ' + refId.innerText);
+        }
+
+        // Function to display current date and time
+        function displayDateTime() {
+            var now = new Date();
+            var dateTimeElement = document.getElementById('dateTime');
+            dateTimeElement.textContent = now.toLocaleString();
+        }
+
+        // Call the function to display current date and time
+        displayDateTime();
+    </script>
 </body>
 </html>

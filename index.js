@@ -46,7 +46,12 @@ app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
 app.get('/', (req, res) => {
+    res.render('home');
+});
+
+app.get('/st', (req, res) => {
     res.render('select_table');
 });
 
