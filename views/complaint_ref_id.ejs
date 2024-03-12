@@ -3,11 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complaint Ref ID</title>
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            background-color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .receipt {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            height: 450px;
+            width: 500px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+
+        .receipt img {
+            width: 300px;
+        }
+
+        .receipt h4 {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .receipt hr {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .receipt .footer {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .receipt .thanks {
+            font-weight: bold;
+        }
+
+        #qrcode {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>Your complaint has been submitted successfully!</h1>
-    <p>Your Ref ID: <%= refId %></p>
-    <p>Please keep this Ref ID for future reference.</p>
+    <div class="container">
+        <div class="d-flex justify-content-center row">
+            <div class="col-md-10">
+                <div class="receipt">
+                    <img src="../public/images/AITAM Logo.png" alt="Amazon Logo">
+                    <h4>Your complaint is Registered!!</h4>
+                    <hr>
+                    <!-- Insert reference ID dynamically -->
+                    <div class="d-flex justify-content-between mt-1">
+                        <span class="font-weight-bold">Reference ID: <%= refId %></span>
+                    </div>
+                    <br>
+                    <br>
+                    <span class="mt-3 text-black-50 fs-15">Your complaint should be verified, and our team will resolve it soon.</span>
+                    <hr>
+                    <div class="footer">
+                        <div class="thanks">
+                            <span class="font-weight-bold">Thanks </span>
+                            <span>Aitam team</span>
+                        </div>
+                        <br>
+                        <div>
+                            <span class="font-weight-bold">Need Help?</span>
+                            <span>Call - 989898989</span>
+                        </div>
+                    </div>
+                    <div id="qrcode"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include qrcode.min.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@latest/qrcode.min.js"></script>
+
+    <script>
+        // Generate QR code with reference ID
+        var refId = '<%= refId %>'; // Assuming refId is passed from server-side
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: "http://localhost:3000/c/qr/" + refId,
+            width: 128,
+            height: 128,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    </script>
 </body>
 </html>

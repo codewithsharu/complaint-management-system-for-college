@@ -4,6 +4,25 @@ const mysql = require('mysql');
 const app = express();
 const port = 3000;
 const path = require("path");
+const qr = require('qrcode');
+
+// Set up your Express app and middleware
+
+// Define your route
+app.get('/qr/:refId', (req, res) => {
+    const refId = req.params.refId;
+
+    // Generate the QR code data URI
+    qr.toDataURL(`http://localhost:3000/c/qr/${refId}`, (err, url) => {
+        if (err) {
+            console.error('Error generating QR code:', err);
+            res.status(500).send('Error generating QR code');
+        } else {
+            // Render the EJS template with the QR code URL
+            res.render('qr', { qrCodeUrl: url });
+        }
+    });
+});
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -208,6 +227,28 @@ app.get('/c/check', (req, res) => {
 // API endpoint to check complaint status based on refId
 app.post('/c/check_complaint_status', (req, res) => {
     const refId = req.body.refId;
+
+    // Check if the refId exists in alldata table
+    const selectQuery = `SELECT status FROM alldata WHERE ref_id = ?`;
+    connection.query(selectQuery, [refId], (err, results) => {
+        if (err) {
+            console.error('Error selecting complaint:', err);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        // If refId exists in alldata table
+        if (results.length > 0) {
+            const status = results[0].status;
+            return res.render('complaint_status', { statusMessage: status });
+        } else {
+            // If refId does not exist in alldata table
+            return res.render('complaint_status', { statusMessage: 'Invalid Ref ID' });
+        }
+    });
+});
+
+app.get('/c/qr/:refId', (req, res) => {
+    const refId = req.params.refId;
 
     // Check if the refId exists in alldata table
     const selectQuery = `SELECT status FROM alldata WHERE ref_id = ?`;
