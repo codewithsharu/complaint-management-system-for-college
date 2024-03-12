@@ -31,9 +31,10 @@
                     <td><%= complaint.status %></td>
                     <td><%= complaint.branch %></td>
                     <td>
-                        <form action="http://localhost:3000/a/<%= complaint.branch %>/<%= complaint.roll_number %>" method="get">
+                        <form action="http://localhost:3000/a/<%= complaint.branch %>/<%= complaint.roll_number %>/<%= complaint.ref_id %>" method="get">
                             <button type="submit">Approve</button>
                         </form>
+                        
                     </td>
                 </tr>
             <% }); %>

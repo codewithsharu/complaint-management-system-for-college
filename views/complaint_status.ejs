@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Complaint Status</title>
+</head>
+<body>
+    <h1>Check Complaint Status</h1>
+    <form action="/c/check_complaint_status" method="POST">
+        <label for="refId">Enter Ref ID:</label>
+        <input type="text" id="refId" name="refId" required>
+        <button type="submit">Check Status</button>
+    </form>
+    <% if(statusMessage) { %>
+        <p>Status: <%= statusMessage %></p>
+    <% } %>
+</body>
+</html>

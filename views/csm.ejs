@@ -17,7 +17,8 @@
                 <th>Created At</th>
                 <th>Status</th>
                 <th>Branch</th>
-                <th>Action</th> <!-- Added column for action -->
+                <th>Ref ID</th> <!-- Added column for ref_id -->
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -29,11 +30,13 @@
                     <td><%= complaint.created_at %></td>
                     <td><%= complaint.status %></td>
                     <td><%= complaint.branch %></td>
+                    <td><%= complaint.ref_id %></td> <!-- Display ref_id -->
                     <td>
                         <% if (complaint.status !== 'solved') { %>
-                            <form action="/mark_as_solved/<%= complaint.id %>" method="POST">
+                            <form action="/mark_as_solved/<%= complaint.branch %>/<%= complaint.ref_id %>" method="POST">
                                 <button type="submit">Mark as Solved</button>
                             </form>
+                            
                         <% } else { %>
                             <span>Solved</span>
                         <% } %>

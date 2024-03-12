@@ -37,182 +37,198 @@ app.post('/select_table', (req, res) => {
 });
 
 app.post('/submit_complaint', (req, res) => {
-    const branch
-
-
- = req.body.branch
-
-
-;
+    const branch = req.body.branch;
     const rollNumber = req.body.rollNumber;
     const complaintMessage = req.body.complaintMessage;
 
     const insertComplaintQuery = `INSERT INTO complaints (branch, roll_number, message) VALUES (?, ?, ?)`;
-    connection.query(insertComplaintQuery, [branch
-
-
-, rollNumber, complaintMessage], (error, results) => {
+    connection.query(insertComplaintQuery, [branch, rollNumber, complaintMessage], (error, results) => {
         if (error) {
             console.error('Error inserting complaint:', error);
             return res.status(500).send('Error submitting complaint');
         }
-        console.log('Complaint submitted successfully');
-        res.redirect('/admin');
+        
+        // Fetch the newly inserted ref_id
+        const fetchRefIdQuery = `SELECT ref_id FROM complaints WHERE id = ?`;
+        connection.query(fetchRefIdQuery, [results.insertId], (err, rows) => {
+            if (err) {
+                console.error('Error fetching ref_id:', err);
+                return res.status(500).send('Error fetching ref_id');
+            }
+            
+            const refId = rows[0].ref_id;
+            // Render a page to display the ref_id
+            res.render('complaint_ref_id', { refId: refId });
+        });
     });
 });
 
-app.get('/admin', (req, res) => {
-    const fetchComplaintsQuery = 'SELECT * FROM complaints';
-    connection.query(fetchComplaintsQuery, (err, complaints) => {
-      if (err) {
-        console.error('Error fetching complaints:', err);
-        res.status(500).send('Internal Server Error');
-        return;
-      }
-      res.render('admin', { complaints: complaints });
-    });
-  });
 
-  app.get('/a/:branch/:roll', (req, res) => {
+app.get('/admin', (req, res) => {
+    const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM complaints';
+    connection.query(fetchComplaintsQuery, (err, complaints) => {
+        if (err) {
+            console.error('Error fetching complaints:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('admin', { complaints: complaints });
+    });
+});
+
+// Include ref_id in the API endpoint
+app.get('/a/:branch/:roll/:ref_id', (req, res) => {
     const branch = req.params.branch;
     const rollNumber = req.params.roll;
-    
-    let tableName = '';
-    switch(branch) {
-        case 'csm':
-            tableName = 'csm';
-            break;
-        case 'cse':
-            tableName = 'cse';
-            break;
-        case 'eee':
-            tableName = 'eee';
-            break;
-        case 'ece':
-            tableName = 'ece';
-            break;
-        case 'civil':
-            tableName = 'civil';
-            break;
-        case 'mec':
-            tableName = 'mec';
-            break;
-        default:
-            return res.status(400).send('Invalid branch');
-    }
+    const refId = req.params.ref_id; // Get the ref_id
 
     const selectQuery = `SELECT * FROM complaints WHERE branch = ? AND roll_number = ?`;
     connection.query(selectQuery, [branch, rollNumber], (err, results) => {
-        if(err) {
+        if (err) {
             console.error('Error selecting complaints:', err);
             return res.status(500).send('Error selecting complaints');
         }
 
-        if(results.length === 0) {
+        if (results.length === 0) {
             return res.status(404).send('No complaints found for this branch and roll number');
         }
 
-        const insertQuery = `INSERT INTO ${tableName} (branch, roll_number, message, created_at, status) VALUES ?`;
-        const values = results.map(complaint => [complaint.branch, complaint.roll_number, complaint.message, complaint.created_at, 'pending']);
-
-        connection.query(insertQuery, [values], (err, result) => {
-            if(err) {
-                console.error('Error inserting complaints into branch table:', err);
-                return res.status(500).send('Error moving complaints to branch table');
+        // Update status to 'processing' in the alldata table
+        const updateStatusQuery = `UPDATE alldata SET status = 'processing' WHERE ref_id = ?`;
+        connection.query(updateStatusQuery, [refId], (err, result) => {
+            if (err) {
+                console.error('Error updating status in alldata table:', err);
+                return res.status(500).send('Error updating status in alldata table');
             }
 
-            const deleteQuery = `DELETE FROM complaints WHERE branch = ? AND roll_number = ?`;
-            connection.query(deleteQuery, [branch, rollNumber], (err, result) => {
-                if(err) {
-                    console.error('Error deleting complaints:', err);
-                    return res.status(500).send('Error deleting complaints');
+            const tableName = branch;
+            const insertQuery = `INSERT INTO ${tableName} (branch, roll_number, message, created_at, status, ref_id) VALUES ?`;
+            const values = results.map(complaint => [complaint.branch, complaint.roll_number, complaint.message, complaint.created_at, 'pending', refId]); // Include ref_id
+
+            connection.query(insertQuery, [values], (err, result) => {
+                if (err) {
+                    console.error('Error inserting complaints into branch table:', err);
+                    return res.status(500).send('Error moving complaints to branch table');
                 }
 
-                console.log('Complaints moved successfully');
-                res.redirect('/admin');
+                const deleteQuery = `DELETE FROM complaints WHERE branch = ? AND roll_number = ?`;
+                connection.query(deleteQuery, [branch, rollNumber], (err, result) => {
+                    if (err) {
+                        console.error('Error deleting complaints:', err);
+                        return res.status(500).send('Error deleting complaints');
+                    }
+
+                    console.log('Complaints moved successfully');
+                    res.redirect('/admin');
+                });
             });
         });
     });
 });
 
 
-app.get('/csm', (req, res) => {
-    const branch = 'csm';
-    const fetchComplaintsQuery = 'SELECT * FROM csm';
+
+// Include ref_id in the branch routes
+app.get('/:branch', (req, res) => {
+    const branch = req.params.branch;
+    const fetchComplaintsQuery = `SELECT * FROM ${branch}`;
     connection.query(fetchComplaintsQuery, (err, complaints) => {
         if (err) {
             console.error('Error fetching complaints:', err);
             res.status(500).send('Internal Server Error');
             return;
         }
-        res.render('csm', { branch: branch, complaints: complaints });
+        res.render(branch, { branch: branch, complaints: complaints });
+    });
+});
+app.post('/mark_as_solved/:branch/:refId', (req, res) => {
+    const branch = req.params.branch;
+    const refId = req.params.refId;
+
+    const sourceTable = branch; // Assuming the source table has the same name as the branch
+
+    // Update the status to "processing" in the alldata table
+    const updateStatusQuery = `UPDATE alldata SET status = 'solved' WHERE ref_id = ?`;
+    connection.query(updateStatusQuery, [refId], (err, result) => {
+        if (err) {
+            console.error('Error updating status in alldata table:', err);
+            return res.status(500).send('Error updating status in alldata table');
+        }
+
+        // Get the complaint details from the source table
+        const selectQuery = `SELECT * FROM ${sourceTable} WHERE ref_id = ?`;
+        connection.query(selectQuery, [refId], (err, results) => {
+            if (err) {
+                console.error('Error selecting complaint:', err);
+                return res.status(500).send('Error selecting complaint');
+            }
+
+            if (results.length === 0) {
+                return res.status(404).send('No complaint found with this ref id');
+            }
+
+            const complaint = results[0];
+
+            // Insert the complaint into the solved table
+            const insertQuery = `INSERT INTO solved (branch, roll_number, message, created_at, status, ref_id) VALUES (?, ?, ?, ?, ?, ?)`;
+            const values = [complaint.branch, complaint.roll_number, complaint.message, complaint.created_at, 'solved', refId];
+
+            connection.query(insertQuery, values, (err, result) => {
+                if (err) {
+                    console.error('Error inserting complaint into solved table:', err);
+                    return res.status(500).send('Error moving complaint to solved table');
+                }
+
+                // Delete the complaint from the source table
+                const deleteQuery = `DELETE FROM ${sourceTable} WHERE ref_id = ?`;
+                connection.query(deleteQuery, [refId], (err, result) => {
+                    if (err) {
+                        console.error('Error deleting complaint from source table:', err);
+                        return res.status(500).send('Error deleting complaint');
+                    }
+
+                    console.log('Complaint marked as solved and moved to solved table successfully');
+                    res.redirect('/admin');
+                });
+            });
+        });
     });
 });
 
-app.get('/cse', (req, res) => {
-    const branch = 'cse';
-    const fetchComplaintsQuery = 'SELECT * FROM cse';
-    connection.query(fetchComplaintsQuery, (err, complaints) => {
+
+// Define a route to render the complaint status page
+app.get('/c/check', (req, res) => {
+    // Get the statusMessage from the request or set a default value
+    const statusMessage = req.query.statusMessage || 'No status message available';
+    res.render('complaint_status', { statusMessage: statusMessage });
+
+
+});
+
+// API endpoint to check complaint status based on refId
+app.post('/c/check_complaint_status', (req, res) => {
+    const refId = req.body.refId;
+
+    // Check if the refId exists in alldata table
+    const selectQuery = `SELECT status FROM alldata WHERE ref_id = ?`;
+    connection.query(selectQuery, [refId], (err, results) => {
         if (err) {
-            console.error('Error fetching complaints:', err);
-            res.status(500).send('Internal Server Error');
-            return;
+            console.error('Error selecting complaint:', err);
+            return res.status(500).send('Internal Server Error');
         }
-        res.render('cse', { branch: branch, complaints: complaints });
+
+        // If refId exists in alldata table
+        if (results.length > 0) {
+            const status = results[0].status;
+            return res.render('complaint_status', { statusMessage: status });
+        } else {
+            // If refId does not exist in alldata table
+            return res.render('complaint_status', { statusMessage: 'Invalid Ref ID' });
+        }
     });
 });
 
-app.get('/eee', (req, res) => {
-    const branch = 'eee';
-    const fetchComplaintsQuery = 'SELECT * FROM eee';
-    connection.query(fetchComplaintsQuery, (err, complaints) => {
-        if (err) {
-            console.error('Error fetching complaints:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        res.render('eee', { branch: branch, complaints: complaints });
-    });
-});
 
-app.get('/ece', (req, res) => {
-    const branch = 'ece';
-    const fetchComplaintsQuery = 'SELECT * FROM ece';
-    connection.query(fetchComplaintsQuery, (err, complaints) => {
-        if (err) {
-            console.error('Error fetching complaints:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        res.render('ece', { branch: branch, complaints: complaints });
-    });
-});
-
-app.get('/civil', (req, res) => {
-    const branch = 'civil';
-    const fetchComplaintsQuery = 'SELECT * FROM civil';
-    connection.query(fetchComplaintsQuery, (err, complaints) => {
-        if (err) {
-            console.error('Error fetching complaints:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        res.render('civil', { branch: branch, complaints: complaints });
-    });
-});
-
-app.get('/mec', (req, res) => {
-    const branch = 'mec';
-    const fetchComplaintsQuery = 'SELECT * FROM mec';
-    connection.query(fetchComplaintsQuery, (err, complaints) => {
-        if (err) {
-            console.error('Error fetching complaints:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        res.render('mec', { branch: branch, complaints: complaints });
-    });
-});
 
 
 app.listen(port, () => {
