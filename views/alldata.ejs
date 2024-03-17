@@ -33,57 +33,52 @@
         tr:hover {
             background-color: #d0d0d0;
         }
-        button {
+        .pending {
+            background-color: #f7be16;
+        }
+        .processing {
+            background-color: #3498db;
+        }
+        .solved {
             background-color: #27ae60;
+        }
+        button {
             color: #fff;
             border: none;
             padding: 8px 20px;
             border-radius: 4px;
             cursor: pointer;
+            width: 100%; /* Full width */
         }
-        button:hover {
-            background-color: #219653;
-        }
-        span.solved {
-            color: #27ae60;
-            font-weight: bold;
+        
+        /* Responsive styles */
+        @media screen and (max-width: 768px) {
+            th, td {
+                font-size: 14px; /* Decrease font size */
+                padding: 8px; /* Decrease padding */
+            }
         }
     </style>
 </head>
 <body>
-    <h1>CSE - Complaints</h1>
+    <h1>All Complaints And Status</h1>
     <table border="1">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Roll Number</th>
+                <th>Reference ID</th>
                 <th>Message</th>
                 <th>Created At</th>
                 <th>Status</th>
-                <th>Branch</th>
-                <th>Ref ID</th> <!-- Added column for ref_id -->
-                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             <% complaints.forEach(function(complaint) { %>
                 <tr>
-                    <td><%= complaint.id %></td>
-                    <td><%= complaint.roll_number %></td>
+                    <td><%= complaint.ref_id %></td> 
                     <td><%= complaint.message %></td>
                     <td><%= complaint.created_at %></td>
-                    <td><%= complaint.status %></td>
-                    <td><%= complaint.branch %></td>
-                    <td><%= complaint.ref_id %></td> <!-- Display ref_id -->
                     <td>
-                        <% if (complaint.status !== 'solved') { %>
-                            <form action="/mark_as_solved/<%= complaint.branch %>/<%= complaint.ref_id %>" method="POST">
-                                <button type="submit">Mark as Solved</button>
-                            </form>
-                            
-                        <% } else { %>
-                            <span class="solved">Solved</span>
-                        <% } %>
+                        <button class="<%= complaint.status %>"><%= complaint.status %></button>
                     </td>
                 </tr>
             <% }); %>

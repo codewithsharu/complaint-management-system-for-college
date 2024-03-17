@@ -4,6 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Check Complaint Status</title>
+    <style>
+        body {
+           
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            color: #333; /* Dark gray color */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Shadow effect */
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555; /* Gray color */
+        }
+        input[type="text"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc; /* Light gray border */
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff; /* Blue color */
+            color: #fff; /* White color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue color on hover */
+        }
+        p.status {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745; /* Green color */
+        }
+    </style>
 </head>
 <body>
     <h1>Check Complaint Status</h1>
@@ -12,8 +52,10 @@
         <input type="text" id="refId" name="refId" required>
         <button type="submit">Check Status</button>
     </form>
+
     <% if(statusMessage) { %>
-        <p>Status: <%= statusMessage %></p>
+        <p class="status">Status: <%= statusMessage.status %></p>
+        <p class="status">Ref ID: <%= statusMessage.refId %></p>
     <% } %>
 </body>
 </html>

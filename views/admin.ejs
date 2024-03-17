@@ -4,6 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Complaints</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        tr:nth-child(even) {
+            background-color: #e0e0e0;
+        }
+        tr:hover {
+            background-color: #d0d0d0;
+        }
+        button {
+            background-color: #27ae60;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #219653;
+        }
+    </style>
 </head>
 <body>
     <h1>Admin Panel - Complaints</h1>
@@ -34,7 +75,6 @@
                         <form action="http://localhost:3000/a/<%= complaint.branch %>/<%= complaint.roll_number %>/<%= complaint.ref_id %>" method="get">
                             <button type="submit">Approve</button>
                         </form>
-                        
                     </td>
                 </tr>
             <% }); %>

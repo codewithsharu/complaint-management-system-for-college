@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Glowy Hover Effect | Nothing4us</title>
+  <title></title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&display=swap">
   <style>
     /* CSS styles here */
@@ -21,6 +21,7 @@ html,
 body {
   height: 100%;
   min-height: 100vh;
+  background-image:url(../public/images/bgr.jpg);
 }
 
 body {
@@ -110,7 +111,7 @@ ul {
 }
 
 .card__price {
-  font-size: 1.75em;
+  font-size: 1em;
   font-weight: 700;
 }
 
@@ -179,26 +180,36 @@ ul {
 </head>
 <body>
 <main class="main flow">
-  <h1 class="main__heading">L O G I N</h1>
+  <h1 class="main__heading">E N T E R</h1>
   <div class="main__cards cards">
 
 
     <div class="cards__inner">
       <div class="cards__card card">
         <h2 class="card__heading">STUDENT</h2>
-        <p class="card__price"></p>
+        <p class="card__price">select the branch: 
+            <select id="branchSelect">
+                <option value="csm">SELECT</option>
+                <option value="csm">CSM</option>
+                <option value="cse">CSE</option>
+                <option value="ece">ECE</option>
+                <option value="civil">Civil</option>
+                <option value="mec">MEC</option>
+                <option value="eee">EEE</option>
+            </select>
+        </p>
         <ul role="list" class="card__bullets flow">
           <li>Register your complaint</li>
           <li>Email support</li>
         </ul>
-        <a href="http://192.168.185.71:3000/st" class="card__cta cta">Login</a>
-      </div>
+        <a href="http://localhost:3000/" id="sloginLink" class="card__cta cta">Login</a>
+          </div>
 
 
       <div class="cards__card card">
         <h2 class="card__heading">HOD</h2>
         <p class="card__price">select the branch: 
-            <select id="branchSelect">
+            <select id="branchSelect1">
                 <option value="csm">SELECT</option>
                 <option value="csm">CSM</option>
                 <option value="cse">CSE</option>
@@ -234,7 +245,7 @@ ul {
  console.clear();
  document.addEventListener('DOMContentLoaded', function() {
     // Get references to the select element and login link
-    var branchSelect = document.getElementById('branchSelect');
+    var branchSelect = document.getElementById('branchSelect1');
     var loginLink = document.getElementById('loginLink');
 
     // Add event listener to the select element
@@ -243,6 +254,21 @@ ul {
         var selectedBranch = branchSelect.value;
         // Update the login link with the selected branch value
         loginLink.href = "http://localhost:3000/" + selectedBranch;
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get references to the select element and login link
+    
+    var branchSelect = document.getElementById('branchSelect');
+    var loginLink = document.getElementById('sloginLink');
+
+    // Add event listener to the select element
+    branchSelect.addEventListener('change', function() {
+        // Get the selected branch value
+        var selectedBranch = branchSelect.value;
+        // Update the login link with the selected branch value
+        loginLink.href = "http://localhost:3000/st/" + selectedBranch;
     });
 });
 

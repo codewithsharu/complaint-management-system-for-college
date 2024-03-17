@@ -1,13 +1,57 @@
-<!-- views/admin.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Complaints</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        tr:nth-child(even) {
+            background-color: #e0e0e0;
+        }
+        tr:hover {
+            background-color: #d0d0d0;
+        }
+        button {
+            background-color: #27ae60;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #219653;
+        }
+        span.solved {
+            color: #27ae60;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>Admin Panel - Complaints</h1>
+    <h1>CSM - Complaints</h1>
     <table border="1">
         <thead>
             <tr>
@@ -38,7 +82,7 @@
                             </form>
                             
                         <% } else { %>
-                            <span>Solved</span>
+                            <span class="solved">Solved</span>
                         <% } %>
                     </td>
                 </tr>

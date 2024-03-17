@@ -5,24 +5,8 @@ const app = express();
 const port = 3000;
 const path = require("path");
 const qr = require('qrcode');
+const favicon = require('serve-favicon');
 
-// Set up your Express app and middleware
-
-// Define your route
-app.get('/qr/:refId', (req, res) => {
-    const refId = req.params.refId;
-
-    // Generate the QR code data URI
-    qr.toDataURL(`http://localhost:3000/c/qr/${refId}`, (err, url) => {
-        if (err) {
-            console.error('Error generating QR code:', err);
-            res.status(500).send('Error generating QR code');
-        } else {
-            // Render the EJS template with the QR code URL
-            res.render('qr', { qrCodeUrl: url });
-        }
-    });
-});
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -38,6 +22,8 @@ connection.connect((err) => {
     }
     console.log('Connected to MySQL as id ' + connection.threadId);
 });
+
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico'))); // Serve favicon.ico file
 
 app.use('/public/images/', express.static('./public/images'));
 
@@ -55,8 +41,8 @@ app.get('/st', (req, res) => {
     res.render('select_table');
 });
 
-app.post('/select_table', (req, res) => {
-    const branch = req.body.branch;
+app.get('/st/:branch', (req, res) => {
+    const branch = req.params.branch;
     res.render('complaint_form', { branch: branch });
 });
 
@@ -107,6 +93,20 @@ app.get('/admin', (req, res) => {
             return;
         }
         res.render('admin', { complaints: complaints });
+    });
+});
+
+
+
+app.get('/a/all', (req, res) => {
+    const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM alldata';
+    connection.query(fetchComplaintsQuery, (err, complaints) => {
+        if (err) {
+            console.error('Error fetching complaints:', err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.render('alldata', { complaints: complaints });
     });
 });
 
@@ -161,10 +161,13 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
 });
 
 
-
-// Include ref_id in the branch routes
 app.get('/:branch', (req, res) => {
-    const branch = req.params.branch;
+    const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil','alldata'];
+    const branch = req.params.branch.toLowerCase(); // Convert branch parameter to lowercase for case-insensitive comparison
+    if (!validBranches.includes(branch)) {
+        res.status(400).send('Invalid entry');
+        return;
+    }
     const fetchComplaintsQuery = `SELECT * FROM ${branch}`;
     connection.query(fetchComplaintsQuery, (err, complaints) => {
         if (err) {
@@ -175,6 +178,7 @@ app.get('/:branch', (req, res) => {
         res.render(branch, { branch: branch, complaints: complaints });
     });
 });
+
 app.post('/mark_as_solved/:branch/:refId', (req, res) => {
     const branch = req.params.branch;
     const refId = req.params.refId;
@@ -254,13 +258,16 @@ app.post('/c/check_complaint_status', (req, res) => {
         // If refId exists in alldata table
         if (results.length > 0) {
             const status = results[0].status;
-            return res.render('complaint_status', { statusMessage: status });
+            // Render the complaint_status.ejs file with status and refId
+            return res.render('complaint_status', { statusMessage: { status: status, refId: refId } });
         } else {
             // If refId does not exist in alldata table
-            return res.render('complaint_status', { statusMessage: 'Invalid Ref ID' });
+            return res.render('complaint_status', { statusMessage: { status: 'Invalid Ref ID', refId: refId } });
         }
     });
 });
+
+
 
 app.get('/c/qr/:refId', (req, res) => {
     const refId = req.params.refId;
@@ -276,10 +283,11 @@ app.get('/c/qr/:refId', (req, res) => {
         // If refId exists in alldata table
         if (results.length > 0) {
             const status = results[0].status;
-            return res.render('complaint_status', { statusMessage: status });
+            // Render the complaint_status.ejs file with status and refId
+            return res.render('complaint_status', { statusMessage: { status: status, refId: refId } });
         } else {
             // If refId does not exist in alldata table
-            return res.render('complaint_status', { statusMessage: 'Invalid Ref ID' });
+            return res.render('complaint_status', { statusMessage: { status: 'Invalid Ref ID', refId: refId } });
         }
     });
 });
