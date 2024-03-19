@@ -10,8 +10,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-image:url(../public/images/bgr.jpg);
-
         }
 
         .receipt {
@@ -19,14 +17,15 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 2px 2px 8px rgba(54,58,64,.2);
-                        height: 450px;
+            max-width: 100%;
             width: 500px;
             margin-top: 50px;
             margin-bottom: 50px;
         }
 
         .receipt img {
-            width: 300px;
+            width: 100%;
+            max-width: 100px;
         }
 
         .receipt h4 {
@@ -51,8 +50,10 @@
         }
 
         .qr-code {
-            position: relative;
-            max-width: 150px; 
+            
+            max-width: 100%;
+            height: auto;
+            
         }
 
         .copy-button {
@@ -64,6 +65,14 @@
             border-radius: 5px;
             font-size: 8px;
         }
+
+        @media (max-width: 600px) {
+            .receipt {
+                width: 90%;
+            }
+        }
+
+        
     </style>
 </head>
 <body>
@@ -71,7 +80,8 @@
         <div class="d-flex justify-content-center row">
             <div class="col-md-10">
                 <div class="receipt">
-                    <img src="../public/images/AITAM Logo.png" alt="Amazon Logo">
+                    <img style=" width: 100%;
+                    max-width: 300px;" src="../public/images/AITAM Logo.png" alt="Amazon Logo">
                     <h4>Your complaint is Registered!!</h4>
                     <hr>
                     <!-- Insert reference ID dynamically -->
