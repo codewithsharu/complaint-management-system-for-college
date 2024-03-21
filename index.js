@@ -45,14 +45,14 @@ app.get('/st/:branch', (req, res) => {
     const branch = req.params.branch;
     res.render('complaint_form', { branch: branch });
 });
-
 app.post('/submit_complaint', (req, res) => {
     const branch = req.body.branch;
     const rollNumber = req.body.rollNumber;
+    const complaintType = req.body.complaintType; // New: Retrieve complaint type
     const complaintMessage = req.body.complaintMessage;
 
-    const insertComplaintQuery = `INSERT INTO complaints (branch, roll_number, message) VALUES (?, ?, ?)`;
-    connection.query(insertComplaintQuery, [branch, rollNumber, complaintMessage], (error, results) => {
+    const insertComplaintQuery = `INSERT INTO complaints (branch, roll_number, type, message) VALUES (?, ?, ?, ?)`; // Include 'type' in the query
+    connection.query(insertComplaintQuery, [branch, rollNumber, complaintType, complaintMessage], (error, results) => {
         if (error) {
             console.error('Error inserting complaint:', error);
             return res.status(500).send('Error submitting complaint');
@@ -136,8 +136,8 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
             }
 
             const tableName = branch;
-            const insertQuery = `INSERT INTO ${tableName} (branch, roll_number, message, created_at, status, ref_id) VALUES ?`;
-            const values = results.map(complaint => [complaint.branch, complaint.roll_number, complaint.message, complaint.created_at, 'pending', refId]); // Include ref_id
+            const insertQuery = `INSERT INTO ${tableName} (branch, roll_number, message, created_at, status, ref_id,type) VALUES ?`;
+            const values = results.map(complaint => [complaint.branch, complaint.roll_number, complaint.message, complaint.created_at, 'pending', refId,complaint.type]); // Include ref_id
 
             connection.query(insertQuery, [values], (err, result) => {
                 if (err) {
@@ -225,7 +225,8 @@ app.post('/mark_as_solved/:branch/:refId', (req, res) => {
                     }
 
                     console.log('Complaint marked as solved and moved to solved table successfully');
-                    res.redirect('/admin');
+                    res.redirect(`/${sourceTable}`);
+
                 });
             });
         });

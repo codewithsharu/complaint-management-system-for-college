@@ -51,30 +51,30 @@
     </style>
 </head>
 <body>
-    <h1>CSM - Complaints</h1>
+    <h1><%= branch %> - Complaints</h1>
     <table border="1">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>complaint type</th>
                 <th>Roll Number</th>
                 <th>Message</th>
                 <th>Created At</th>
-                <th>Status</th>
+              
                 <th>Branch</th>
-                <th>Ref ID</th> <!-- Added column for ref_id -->
+           
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
             <% complaints.forEach(function(complaint) { %>
                 <tr>
-                    <td><%= complaint.id %></td>
+                    <td><%= complaint.type %></td>
                     <td><%= complaint.roll_number %></td>
                     <td><%= complaint.message %></td>
                     <td><%= complaint.created_at %></td>
-                    <td><%= complaint.status %></td>
+                   
                     <td><%= complaint.branch %></td>
-                    <td><%= complaint.ref_id %></td> <!-- Display ref_id -->
+                    
                     <td>
                         <% if (complaint.status !== 'solved') { %>
                             <form action="/mark_as_solved/<%= complaint.branch %>/<%= complaint.ref_id %>" method="POST">
