@@ -183,9 +183,8 @@ app.post('/mark_as_solved/:branch/:refId', (req, res) => {
     const branch = req.params.branch;
     const refId = req.params.refId;
 
-    const sourceTable = branch; // Assuming the source table has the same name as the branch
+    const sourceTable = branch; 
 
-    // Update the status to "processing" in the alldata table
     const updateStatusQuery = `UPDATE alldata SET status = 'solved' WHERE ref_id = ?`;
     connection.query(updateStatusQuery, [refId], (err, result) => {
         if (err) {

@@ -47,6 +47,16 @@
             box-sizing: border-box;
         }
 
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
         button[type="submit"] {
             width: 100%;
             padding: 10px;
@@ -72,11 +82,20 @@
 </head>
 <body>
    <div>
-    <h1>branch: <%= branch %></h1>
+    <h1>Branch: <%= branch %></h1>
     <form action="/submit_complaint" method="post">
         <input type="hidden" name="branch" value="<%= branch%>">
         <label for="rollNumber">Enter Roll Number:</label>
         <input type="text" id="rollNumber" name="rollNumber" required>
+        <br>
+        <label for="complaintType">Select Complaint Type:</label>
+        <select id="complaintType" name="complaintType" required>
+            <option value="">Select</option>
+            <option value="network">Network</option>
+            <option value="water">Water</option>
+            <option value="study">Study</option>
+            <!-- Add more options as needed -->
+        </select>
         <br>
         <label for="complaintMessage">Enter Complaint:</label>
         <textarea id="complaintMessage" name="complaintMessage" rows="4" cols="50" required></textarea>
