@@ -5,63 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Complaints</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f7f7f7;
-        }
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f0f0f0;
-        }
-        tr:nth-child(even) {
-            background-color: #e0e0e0;
-        }
-        tr:hover {
-            background-color: #d0d0d0;
-        }
-        button {
-            background-color: #27ae60;
-            color: #fff;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #219653;
-        }
-        span.solved {
-            color: #27ae60;
-            font-weight: bold;
-        }
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f7f7f7;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+}
+
+tr:nth-child(even) {
+    background-color: #e0e0e0;
+}
+
+tr:hover {
+    background-color: #d0d0d0;
+}
+
+button {
+    background-color: #27ae60;
+    color: #fff;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #219653;
+}
+
+span.solved {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 600px) {
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 6px;
+    }
+
+    button {
+        padding: 4px 12px;
+        font-size: 12px;
+    }
+}
+
     </style>
 </head>
 <body>
-    <h1><%= branch %> - Complaints</h1>
+    <h1><%= branch %> - complaints</h1>
     <table border="1">
         <thead>
             <tr>
-                <th>complaint type</th>
+                <th>Complaint Type</th>
                 <th>Roll Number</th>
                 <th>Message</th>
                 <th>Created At</th>
-              
                 <th>Branch</th>
-           
                 <th>Action</th>
             </tr>
         </thead>
@@ -72,15 +96,12 @@
                     <td><%= complaint.roll_number %></td>
                     <td><%= complaint.message %></td>
                     <td><%= complaint.created_at %></td>
-                   
                     <td><%= complaint.branch %></td>
-                    
                     <td>
                         <% if (complaint.status !== 'solved') { %>
                             <form action="/mark_as_solved/<%= complaint.branch %>/<%= complaint.ref_id %>" method="POST">
                                 <button type="submit">Mark as Solved</button>
                             </form>
-                            
                         <% } else { %>
                             <span class="solved">Solved</span>
                         <% } %>

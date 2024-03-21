@@ -82,8 +82,9 @@
 </head>
 <body>
    <div>
-    <h1>Branch: <%= branch %></h1>
+   
     <form action="/submit_complaint" method="post">
+        <h1 style="font-size:medium; color:red;">branch: <%= branch %></h1>
         <input type="hidden" name="branch" value="<%= branch%>">
         <label for="rollNumber">Enter Roll Number:</label>
         <input type="text" id="rollNumber" name="rollNumber" required>

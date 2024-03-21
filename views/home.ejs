@@ -191,11 +191,59 @@ ul {
   --lightness: 95%;
   background: hsla(var(--hsl), 0.1);
 }
+header {
+  background-color: #111;
+  padding: 10px 0;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.navbar__logo img {
+  height: 50px; /* Adjust the height as needed */
+}
+
+.navbar__menu {
+  list-style: none;
+  display: flex;
+}
+
+.navbar__menu li {
+  margin-right: 20px;
+}
+
+.navbar__menu li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.navbar__menu li a:hover {
+  color: #ddd;
+}
+
   </style>
 </head>
 <body>
+  <header style="position: fixed; left:0; top:0;">
+    <nav class="navbar">
+      <div class="navbar__logo">
+        <img src="../public/images/AITAM Logo.png" alt="Logo">
+      </div>
+      <!-- <ul class="navbar__menu">
+        <li><a href="#student">STUDENT</a></li>
+        <li><a href="#hod">HOD</a></li>
+        <li><a href="#admin">ADMIN</a></li>
+      </ul> -->
+    </nav>
+  </header>
+  
 <main class="main flow">
-  <h1 class="main__heading">E N T E R</h1>
+  <h1 style="  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;" class="main__heading">C O M P L I A N T &nbsp;&nbsp;P O R T A L</h1>
   <div class="main__cards cards">
 
 
