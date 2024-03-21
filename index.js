@@ -84,7 +84,28 @@ app.post('/submit_complaint', (req, res) => {
 
 
 
+// app.get('/admin', (req, res) => {
+//     const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM complaints';
+//     connection.query(fetchComplaintsQuery, (err, complaints) => {
+//         if (err) {
+//             console.error('Error fetching complaints:', err);
+//             res.status(500).send('Internal Server Error');
+//             return;
+//         }
+//         res.render('admin', { complaints: complaints });
+//     });
+// });
+
 app.get('/admin', (req, res) => {
+    res.render('admin-password');
+});
+
+app.post('/admin/login', (req, res) => {
+    const password = req.body.password;
+    if (password !== '12345') {
+        res.status(401).send('Unauthorized');
+        return;
+    }
     const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM complaints';
     connection.query(fetchComplaintsQuery, (err, complaints) => {
         if (err) {
@@ -161,23 +182,53 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
 });
 
 
+// app.get('/:branch', (req, res) => {
+//     const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil','alldata'];
+//     const branch = req.params.branch.toLowerCase(); // Convert branch parameter to lowercase for case-insensitive comparison
+//     if (!validBranches.includes(branch)) {
+//         res.status(400).send('Invalid entry');
+//         return;
+//     }
+//     const fetchComplaintsQuery = `SELECT * FROM ${branch}`;
+//     connection.query(fetchComplaintsQuery, (err, complaints) => {
+//         if (err) {
+//             console.error('Error fetching complaints:', err);
+//             res.status(500).send('Internal Server Error');
+//             return;
+//         }
+
+
+//         res.render(branch, { branch: branch, complaints: complaints });
+//     });
+// });
+
 app.get('/:branch', (req, res) => {
-    const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil','alldata'];
+    const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata'];
     const branch = req.params.branch.toLowerCase(); // Convert branch parameter to lowercase for case-insensitive comparison
     if (!validBranches.includes(branch)) {
         res.status(400).send('Invalid entry');
         return;
     }
-    const fetchComplaintsQuery = `SELECT * FROM ${branch}`;
+    res.render('password', { branch: branch });
+});
+
+app.post('/:branch/complaints', (req, res) => {
+    const password = req.body.password;
+    if (password !== '12345') {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+    const fetchComplaintsQuery = `SELECT * FROM ${req.params.branch.toLowerCase()}`;
     connection.query(fetchComplaintsQuery, (err, complaints) => {
         if (err) {
             console.error('Error fetching complaints:', err);
             res.status(500).send('Internal Server Error');
             return;
         }
-        res.render(branch, { branch: branch, complaints: complaints });
+        res.render('table', { branch: req.params.branch.toLowerCase(), complaints: complaints });
     });
 });
+
 
 app.post('/mark_as_solved/:branch/:refId', (req, res) => {
     const branch = req.params.branch;
