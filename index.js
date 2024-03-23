@@ -48,7 +48,7 @@ app.get('/st/:branch', (req, res) => {
 app.post('/submit_complaint', (req, res) => {
     const branch = req.body.branch;
     const rollNumber = req.body.rollNumber;
-    const complaintType = req.body.complaintType; // New: Retrieve complaint type
+    const complaintType = req.body.complaintType; 
     const complaintMessage = req.body.complaintMessage;
 
     const insertComplaintQuery = `INSERT INTO complaints (branch, roll_number, type, message) VALUES (?, ?, ?, ?)`; // Include 'type' in the query
@@ -58,7 +58,6 @@ app.post('/submit_complaint', (req, res) => {
             return res.status(500).send('Error submitting complaint');
         }
         
-        // Fetch the newly inserted ref_id
         const fetchRefIdQuery = `SELECT ref_id FROM complaints WHERE id = ?`;
         connection.query(fetchRefIdQuery, [results.insertId], (err, rows) => {
             if (err) {
@@ -68,13 +67,11 @@ app.post('/submit_complaint', (req, res) => {
             
             const refId = rows[0].ref_id;
 
-            // Generate the QR code data URI
             qr.toDataURL(`http://localhost:3000/c/qr/${refId}`, (err, url) => {
                 if (err) {
                     console.error('Error generating QR code:', err);
                     res.status(500).send('Error generating QR code');
                 } else {
-                    // Render the EJS template with the QR code URL and refId
                     res.render('complaint_ref_id', { qrCodeUrl: url, refId: refId });
                 }
             });
@@ -84,17 +81,6 @@ app.post('/submit_complaint', (req, res) => {
 
 
 
-// app.get('/admin', (req, res) => {
-//     const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM complaints';
-//     connection.query(fetchComplaintsQuery, (err, complaints) => {
-//         if (err) {
-//             console.error('Error fetching complaints:', err);
-//             res.status(500).send('Internal Server Error');
-//             return;
-//         }
-//         res.render('admin', { complaints: complaints });
-//     });
-// });
 
 app.get('/admin', (req, res) => {
     res.render('admin-password');
@@ -131,11 +117,10 @@ app.get('/a/all', (req, res) => {
     });
 });
 
-// Include ref_id in the API endpoint
 app.get('/a/:branch/:roll/:ref_id', (req, res) => {
     const branch = req.params.branch;
     const rollNumber = req.params.roll;
-    const refId = req.params.ref_id; // Get the ref_id
+    const refId = req.params.ref_id; 
 
     const selectQuery = `SELECT * FROM complaints WHERE branch = ? AND roll_number = ?`;
     connection.query(selectQuery, [branch, rollNumber], (err, results) => {
@@ -148,7 +133,6 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
             return res.status(404).send('No complaints found for this branch and roll number');
         }
 
-        // Update status to 'processing' in the alldata table
         const updateStatusQuery = `UPDATE alldata SET status = 'processing' WHERE ref_id = ?`;
         connection.query(updateStatusQuery, [refId], (err, result) => {
             if (err) {
@@ -182,28 +166,9 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
 });
 
 
-// app.get('/:branch', (req, res) => {
-//     const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil','alldata'];
-//     const branch = req.params.branch.toLowerCase(); // Convert branch parameter to lowercase for case-insensitive comparison
-//     if (!validBranches.includes(branch)) {
-//         res.status(400).send('Invalid entry');
-//         return;
-//     }
-//     const fetchComplaintsQuery = `SELECT * FROM ${branch}`;
-//     connection.query(fetchComplaintsQuery, (err, complaints) => {
-//         if (err) {
-//             console.error('Error fetching complaints:', err);
-//             res.status(500).send('Internal Server Error');
-//             return;
-//         }
-
-
-//         res.render(branch, { branch: branch, complaints: complaints });
-//     });
-// });
 
 app.get('/:branch', (req, res) => {
-    const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata'];
+    const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata','solved'];
     const branch = req.params.branch.toLowerCase(); // Convert branch parameter to lowercase for case-insensitive comparison
     if (!validBranches.includes(branch)) {
         res.status(400).send('Invalid entry');
@@ -243,7 +208,6 @@ app.post('/mark_as_solved/:branch/:refId', (req, res) => {
             return res.status(500).send('Error updating status in alldata table');
         }
 
-        // Get the complaint details from the source table
         const selectQuery = `SELECT * FROM ${sourceTable} WHERE ref_id = ?`;
         connection.query(selectQuery, [refId], (err, results) => {
             if (err) {
@@ -257,7 +221,6 @@ app.post('/mark_as_solved/:branch/:refId', (req, res) => {
 
             const complaint = results[0];
 
-            // Insert the complaint into the solved table
             const insertQuery = `INSERT INTO solved (branch, roll_number, message, created_at, status, ref_id) VALUES (?, ?, ?, ?, ?, ?)`;
             const values = [complaint.branch, complaint.roll_number, complaint.message, complaint.created_at, 'solved', refId];
 
@@ -267,7 +230,6 @@ app.post('/mark_as_solved/:branch/:refId', (req, res) => {
                     return res.status(500).send('Error moving complaint to solved table');
                 }
 
-                // Delete the complaint from the source table
                 const deleteQuery = `DELETE FROM ${sourceTable} WHERE ref_id = ?`;
                 connection.query(deleteQuery, [refId], (err, result) => {
                     if (err) {
@@ -285,20 +247,16 @@ app.post('/mark_as_solved/:branch/:refId', (req, res) => {
 });
 
 
-// Define a route to render the complaint status page
 app.get('/c/check', (req, res) => {
-    // Get the statusMessage from the request or set a default value
     const statusMessage = req.query.statusMessage || 'No status message available';
     res.render('complaint_status', { statusMessage: statusMessage });
 
 
 });
 
-// API endpoint to check complaint status based on refId
 app.post('/c/check_complaint_status', (req, res) => {
     const refId = req.body.refId;
 
-    // Check if the refId exists in alldata table
     const selectQuery = `SELECT status FROM alldata WHERE ref_id = ?`;
     connection.query(selectQuery, [refId], (err, results) => {
         if (err) {
@@ -306,13 +264,10 @@ app.post('/c/check_complaint_status', (req, res) => {
             return res.status(500).send('Internal Server Error');
         }
 
-        // If refId exists in alldata table
         if (results.length > 0) {
             const status = results[0].status;
-            // Render the complaint_status.ejs file with status and refId
             return res.render('complaint_status', { statusMessage: { status: status, refId: refId } });
         } else {
-            // If refId does not exist in alldata table
             return res.render('complaint_status', { statusMessage: { status: 'Invalid Ref ID', refId: refId } });
         }
     });
@@ -323,7 +278,6 @@ app.post('/c/check_complaint_status', (req, res) => {
 app.get('/c/qr/:refId', (req, res) => {
     const refId = req.params.refId;
 
-    // Check if the refId exists in alldata table
     const selectQuery = `SELECT status FROM alldata WHERE ref_id = ?`;
     connection.query(selectQuery, [refId], (err, results) => {
         if (err) {
@@ -331,13 +285,10 @@ app.get('/c/qr/:refId', (req, res) => {
             return res.status(500).send('Internal Server Error');
         }
 
-        // If refId exists in alldata table
         if (results.length > 0) {
             const status = results[0].status;
-            // Render the complaint_status.ejs file with status and refId
             return res.render('complaint_status', { statusMessage: { status: status, refId: refId } });
         } else {
-            // If refId does not exist in alldata table
             return res.render('complaint_status', { statusMessage: { status: 'Invalid Ref ID', refId: refId } });
         }
     });

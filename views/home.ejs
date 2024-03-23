@@ -135,11 +135,11 @@ ul {
 
 @media screen and (max-width: 768px) {
   .cards__inner {
-    flex-direction: column; /* Stack cards vertically */
+    flex-direction: column; 
   }
 
   .card {
-    width: 100%; /* Take full width of the container */
+    width: 100%; 
   }
 }
 
@@ -204,7 +204,7 @@ header {
 }
 
 .navbar__logo img {
-  height: 50px; /* Adjust the height as needed */
+  height: 50px;
 }
 
 .navbar__menu {
@@ -307,30 +307,22 @@ header {
 <script>
  console.clear();
  document.addEventListener('DOMContentLoaded', function() {
-    // Get references to the select element and login link
     var branchSelect = document.getElementById('branchSelect1');
     var loginLink = document.getElementById('loginLink');
 
-    // Add event listener to the select element
     branchSelect.addEventListener('change', function() {
-        // Get the selected branch value
         var selectedBranch = branchSelect.value;
-        // Update the login link with the selected branch value
         loginLink.href = "http://localhost:3000/" + selectedBranch;
     });
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Get references to the select element and login link
     
     var branchSelect = document.getElementById('branchSelect');
     var loginLink = document.getElementById('sloginLink');
 
-    // Add event listener to the select element
     branchSelect.addEventListener('change', function() {
-        // Get the selected branch value
         var selectedBranch = branchSelect.value;
-        // Update the login link with the selected branch value
         loginLink.href = "http://localhost:3000/st/" + selectedBranch;
     });
 });

@@ -85,7 +85,6 @@
                     max-width: 300px;" src="../public/images/AITAM Logo.png" alt="Amazon Logo">
                     <h4>Your complaint is Registered!!</h4>
                     <hr>
-                    <!-- Insert reference ID dynamically -->
                     <div class="d-flex justify-content-between mt-1">
                         <span style="color:red; font-weight:400;">Reference ID:</span> <span id="refId"><%= refId %></span>
                         <button class="copy-button" onclick="copyToClipboard()">Copy</button>
@@ -126,14 +125,12 @@
             alert('Reference ID copied to clipboard: ' + refId.innerText);
         }
 
-        // Function to display current date and time
         function displayDateTime() {
             var now = new Date();
             var dateTimeElement = document.getElementById('dateTime');
             dateTimeElement.textContent = now.toLocaleString();
         }
 
-        // Call the function to display current date and time
         displayDateTime();
     </script>
 </body>
