@@ -6,7 +6,7 @@ const port = 3000;
 const path = require("path");
 const qr = require('qrcode');
 const favicon = require('serve-favicon');
-
+const session = require('express-session');
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -22,6 +22,14 @@ connection.connect((err) => {
     }
     console.log('Connected to MySQL as id ' + connection.threadId);
 });
+
+
+app.use(session({
+    secret: 'your_secret_key', // Replace with your own secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set secure to true if using HTTPS
+}));
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico'))); // Serve favicon.ico file
 
@@ -82,16 +90,25 @@ app.post('/submit_complaint', (req, res) => {
 
 
 
-app.get('/admin', (req, res) => {
-    res.render('admin-password');
-});
+// app.get('/admin', (req, res) => {
+//     res.render('admin-password');
+// });
 
-app.post('/admin/login', (req, res) => {
-    const password = req.body.password;
-    if (password !== '12345') {
-        res.status(401).send('Unauthorized');
-        return;
+// Middleware to check authentication
+function authenticate(req, res, next) {
+    if (req.session.authenticated) {
+        // User is authenticated, proceed to the next middleware
+        next();
+    } else {
+        // User is not authenticated, redirect to admin login page
+        res.render('admin-login');
     }
+}
+
+// Route for /admin
+app.get('/admin', authenticate, (req, res) => {
+    // Only accessible if authenticated
+    // Your admin panel logic goes here
     const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM complaints';
     connection.query(fetchComplaintsQuery, (err, complaints) => {
         if (err) {
@@ -104,6 +121,18 @@ app.post('/admin/login', (req, res) => {
 });
 
 
+
+
+app.post('/admin/login', (req, res) => {
+    const password = req.body.password;
+    if (password !== '12345') {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+    req.session.authenticated = true; // Set session variable upon successful login
+    // Redirect to admin panel or dashboard
+    res.redirect('/admin');
+});
 
 app.get('/a/all', (req, res) => {
     const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM alldata';
@@ -169,7 +198,7 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
 
 app.get('/:branch', (req, res) => {
     const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata','solved'];
-    const branch = req.params.branch.toLowerCase(); // Convert branch parameter to lowercase for case-insensitive comparison
+    const branch = req.params.branch.toLowerCase(); 
     if (!validBranches.includes(branch)) {
         res.status(400).send('Invalid entry');
         return;
