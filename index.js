@@ -196,22 +196,80 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
 
 
 
-app.get('/:branch', (req, res) => {
+// app.get('/:branch', (req, res) => {
+//     const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata','solved'];
+//     const branch = req.params.branch.toLowerCase(); 
+//     if (!validBranches.includes(branch)) {
+//         res.status(400).send('Invalid entry');
+//         return;
+//     }
+//     res.render('password', { branch: branch });
+// });
+
+// app.post('/:branch/complaints', (req, res) => {
+//     const password = req.body.password;
+//     if (password !== '12345') {
+//         res.status(401).send('Unauthorized');
+//         return;
+//     }
+//     const fetchComplaintsQuery = `SELECT * FROM ${req.params.branch.toLowerCase()}`;
+//     connection.query(fetchComplaintsQuery, (err, complaints) => {
+//         if (err) {
+//             console.error('Error fetching complaints:', err);
+//             res.status(500).send('Internal Server Error');
+//             return;
+//         }
+//         res.render('table', { branch: req.params.branch.toLowerCase(), complaints: complaints });
+//     });
+// });
+
+function authenticateBranch(req, res, next) {
+    // Check if the user is authenticated
+    if (req.session.authenticated) {
+        // User is authenticated, proceed to the next middleware
+        next();
+    } else {
+        // User is not authenticated, render the branch-specific login page
+        const branch = req.params.branch;
+        res.render('branch-login', { branch });
+    }
+}
+
+// // Route for rendering branch login page
+// app.get('/branch-login/:branch', (req, res) => {
+//     const branch = req.params.branch;
+//     res.render('branch-login', { branch: branch });
+// });
+// Route for handling branch login
+app.post('/:branch/login', (req, res) => {
+    const password = req.body.password;
+    const branch = req.params.branch;
+    // Check if password matches for the specific branch
+    // Implement your password verification logic here
+    if (password === '12345') { // Change this to your actual common password
+        // Password is correct, set session variable to mark authentication for the specific branch
+        req.session.authenticated = true; // Set session variable upon successful login
+   
+        res.redirect(`/${branch}`);
+    } else {
+        // Password is incorrect, redirect back to the branch login page for the specific branch
+
+        res.send("wrong password");
+    }
+});
+
+
+// Example branch route with authentication
+app.get('/:branch', authenticateBranch, (req, res) => {
+    // Only accessible if authenticated for any branch
+    // Your branch logic goes here
     const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata','solved'];
     const branch = req.params.branch.toLowerCase(); 
     if (!validBranches.includes(branch)) {
         res.status(400).send('Invalid entry');
         return;
     }
-    res.render('password', { branch: branch });
-});
 
-app.post('/:branch/complaints', (req, res) => {
-    const password = req.body.password;
-    if (password !== '12345') {
-        res.status(401).send('Unauthorized');
-        return;
-    }
     const fetchComplaintsQuery = `SELECT * FROM ${req.params.branch.toLowerCase()}`;
     connection.query(fetchComplaintsQuery, (err, complaints) => {
         if (err) {
@@ -222,6 +280,9 @@ app.post('/:branch/complaints', (req, res) => {
         res.render('table', { branch: req.params.branch.toLowerCase(), complaints: complaints });
     });
 });
+
+
+
 
 
 app.post('/mark_as_solved/:branch/:refId', (req, res) => {
@@ -250,8 +311,8 @@ app.post('/mark_as_solved/:branch/:refId', (req, res) => {
 
             const complaint = results[0];
 
-            const insertQuery = `INSERT INTO solved (branch, roll_number, message, created_at, status, ref_id) VALUES (?, ?, ?, ?, ?, ?)`;
-            const values = [complaint.branch, complaint.roll_number, complaint.message, complaint.created_at, 'solved', refId];
+            const insertQuery = `INSERT INTO solved (branch, roll_number, message, created_at, status, ref_id, type) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+            const values = [complaint.branch, complaint.roll_number, complaint.message, complaint.created_at, 'solved', refId,complaint.type];
 
             connection.query(insertQuery, values, (err, result) => {
                 if (err) {
