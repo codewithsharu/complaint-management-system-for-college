@@ -14,10 +14,11 @@
         h1 {
             text-align: center;
             margin-top: 20px;
+            font-size: medium;
         }
         .dashboard-section {
             margin-top: 20px;
-            background-color: #ffffff;
+            background-color: black;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
@@ -25,6 +26,8 @@
         .section-header {
             font-size: 20px;
             margin-bottom: 10px;
+            cursor: pointer;
+            color: springgreen;
         }
         .complaint {
             margin-bottom: 10px;
@@ -43,6 +46,18 @@
             background-color: #27ae60;
             color: #fff;
         }
+        .close-btn {
+            background-color: #ccc;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            padding: 5px;
+            cursor: pointer;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: none;
+        }
         /* Responsive styles */
         @media screen and (max-width: 768px) {
             .dashboard-section {
@@ -57,38 +72,62 @@
 <body>
     <h1>Complaints Dashboard</h1>
 
-    <div class="dashboard-section">
-        <div class="section-header">Pending Complaints</div>
-        <% complaints.filter(complaint => complaint.status === 'pending').forEach(function(complaint) { %>
-            <div class="complaint pending">
-                <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
-                <strong>Message:</strong> <%= complaint.message %><br>
-                <strong>Created At:</strong> <%= complaint.created_at %><br>
-            </div>
-        <% }); %>
+    <div class="dashboard-section" id="processing-section">
+        <div class="section-header" onclick="toggleSection('processing')">Processing Complaints</div>
+        <button class="close-btn" onclick="closeSection('processing')">x</button>
+        <div id="processing-content">
+            <% complaints.filter(complaint => complaint.status === 'processing').forEach(function(complaint) { %>
+                <div class="complaint processing">
+                    <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
+                    <strong>Message:</strong> <%= complaint.message %><br>
+                    <strong>Created At:</strong> <%= complaint.created_at %><br>
+                </div>
+            <% }); %>
+        </div>
     </div>
 
-    <div class="dashboard-section">
-        <div class="section-header">Processing Complaints</div>
-        <% complaints.filter(complaint => complaint.status === 'processing').forEach(function(complaint) { %>
-            <div class="complaint processing">
-                <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
-                <strong>Message:</strong> <%= complaint.message %><br>
-                <strong>Created At:</strong> <%= complaint.created_at %><br>
-            </div>
-        <% }); %>
+    <div class="dashboard-section" id="pending-section">
+        <div class="section-header" onclick="toggleSection('pending')">Pending Complaints</div>
+        <button class="close-btn" onclick="closeSection('pending')">x</button>
+        <div id="pending-content">
+            <% complaints.filter(complaint => complaint.status === 'pending').forEach(function(complaint) { %>
+                <div class="complaint pending">
+                    <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
+                    <strong>Message:</strong> <%= complaint.message %><br>
+                    <strong>Created At:</strong> <%= complaint.created_at %><br>
+                </div>
+            <% }); %>
+        </div>
     </div>
 
-    <div class="dashboard-section">
-        <div class="section-header">Solved Complaints</div>
-        <% complaints.filter(complaint => complaint.status === 'solved').forEach(function(complaint) { %>
-            <div class="complaint solved">
-                <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
-                <strong>Message:</strong> <%= complaint.message %><br>
-                <strong>Created At:</strong> <%= complaint.created_at %><br>
-            </div>
-        <% }); %>
+    <div class="dashboard-section" id="solved-section">
+        <div class="section-header" onclick="toggleSection('solved')">Solved Complaints</div>
+        <button class="close-btn" onclick="closeSection('solved')">x</button>
+        <div id="solved-content">
+            <% complaints.filter(complaint => complaint.status === 'solved').forEach(function(complaint) { %>
+                <div class="complaint solved">
+                    <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
+                    <strong>Message:</strong> <%= complaint.message %><br>
+                    <strong>Created At:</strong> <%= complaint.created_at %><br>
+                </div>
+            <% }); %>
+        </div>
     </div>
 
+    <script>
+        function toggleSection(sectionId) {
+            var sectionContent = document.getElementById(sectionId + '-content');
+            var closeBtn = document.querySelector('#' + sectionId + '-section .close-btn');
+            sectionContent.style.display = (sectionContent.style.display === 'none') ? 'block' : 'none';
+            closeBtn.style.display = (sectionContent.style.display === 'none') ? 'none' : 'block';
+        }
+
+        function closeSection(sectionId) {
+            var sectionContent = document.getElementById(sectionId + '-content');
+            var closeBtn = document.querySelector('#' + sectionId + '-section .close-btn');
+            sectionContent.style.display = 'none';
+            closeBtn.style.display = 'none';
+        }
+    </script>
 </body>
 </html>
