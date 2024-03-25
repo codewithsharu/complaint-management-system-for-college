@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Complaints</title>
+    <title>Admin Panel - Complaints Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,74 +15,80 @@
             text-align: center;
             margin-top: 20px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .dashboard-section {
             margin-top: 20px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
         }
-        th, td {
+        .section-header {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .complaint {
+            margin-bottom: 10px;
             padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f0f0f0;
-        }
-        tr:nth-child(even) {
-            background-color: #e0e0e0;
-        }
-        tr:hover {
-            background-color: #d0d0d0;
+            border-radius: 4px;
         }
         .pending {
             background-color: #f7be16;
+            color: #fff;
         }
         .processing {
             background-color: #3498db;
+            color: #fff;
         }
         .solved {
             background-color: #27ae60;
-        }
-        button {
             color: #fff;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%; /* Full width */
         }
-        
         /* Responsive styles */
         @media screen and (max-width: 768px) {
-            th, td {
-                font-size: 14px; /* Decrease font size */
-                padding: 8px; /* Decrease padding */
+            .dashboard-section {
+                padding: 10px;
+            }
+            .section-header {
+                font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
-    <h1>All Complaints And Status</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Reference ID</th>
-                <th>Message</th>
-                <th>Created At</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% complaints.forEach(function(complaint) { %>
-                <tr>
-                    <td><%= complaint.ref_id %></td> 
-                    <td><%= complaint.message %></td>
-                    <td><%= complaint.created_at %></td>
-                    <td>
-                        <button class="<%= complaint.status %>"><%= complaint.status %></button>
-                    </td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
+    <h1>Complaints Dashboard</h1>
+
+    <div class="dashboard-section">
+        <div class="section-header">Pending Complaints</div>
+        <% complaints.filter(complaint => complaint.status === 'pending').forEach(function(complaint) { %>
+            <div class="complaint pending">
+                <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
+                <strong>Message:</strong> <%= complaint.message %><br>
+                <strong>Created At:</strong> <%= complaint.created_at %><br>
+            </div>
+        <% }); %>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-header">Processing Complaints</div>
+        <% complaints.filter(complaint => complaint.status === 'processing').forEach(function(complaint) { %>
+            <div class="complaint processing">
+                <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
+                <strong>Message:</strong> <%= complaint.message %><br>
+                <strong>Created At:</strong> <%= complaint.created_at %><br>
+            </div>
+        <% }); %>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-header">Solved Complaints</div>
+        <% complaints.filter(complaint => complaint.status === 'solved').forEach(function(complaint) { %>
+            <div class="complaint solved">
+                <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
+                <strong>Message:</strong> <%= complaint.message %><br>
+                <strong>Created At:</strong> <%= complaint.created_at %><br>
+            </div>
+        <% }); %>
+    </div>
+
 </body>
 </html>
