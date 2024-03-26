@@ -25,14 +25,13 @@ connection.connect((err) => {
 
 
 app.use(session({
-    secret: 'your_secret_key', // Replace with your own secret key
+    secret: 'your_secret_key',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Set secure to true if using HTTPS
+    cookie: { secure: false } 
 }));
 
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico'))); // Serve favicon.ico file
-
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico'))); 
 app.use('/public/images/', express.static('./public/images'));
 
 app.set("views", path.join(__dirname, "/views"));
@@ -90,25 +89,16 @@ app.post('/submit_complaint', (req, res) => {
 
 
 
-// app.get('/admin', (req, res) => {
-//     res.render('admin-password');
-// });
-
-// Middleware to check authentication
 function authenticate(req, res, next) {
     if (req.session.authenticated) {
-        // User is authenticated, proceed to the next middleware
         next();
     } else {
-        // User is not authenticated, redirect to admin login page
         res.render('admin-login');
     }
 }
 
-// Route for /admin
 app.get('/admin', authenticate, (req, res) => {
-    // Only accessible if authenticated
-    // Your admin panel logic goes here
+  
     const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM complaints';
     connection.query(fetchComplaintsQuery, (err, complaints) => {
         if (err) {
@@ -129,22 +119,49 @@ app.post('/admin/login', (req, res) => {
         res.status(401).send('Unauthorized');
         return;
     }
-    req.session.authenticated = true; // Set session variable upon successful login
-    // Redirect to admin panel or dashboard
+    req.session.authenticated = true; 
     res.redirect('/admin');
 });
 
 app.get('/a/all', (req, res) => {
-    const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM alldata';
+    const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id, solved_at  FROM alldata';
     connection.query(fetchComplaintsQuery, (err, complaints) => {
         if (err) {
             console.error('Error fetching complaints:', err);
             res.status(500).send('Internal Server Error');
             return;
         }
-        res.render('alldata', { complaints: complaints });
+        
+        let pendingCount = 0;
+        let processingCount = 0;
+        let solvedCount = 0;
+
+        complaints.forEach(complaint => {
+            switch (complaint.status) {
+                case 'pending':
+                    pendingCount++;
+                    break;
+                case 'processing':
+                    processingCount++;
+                    break;
+                case 'solved':
+                    solvedCount++;
+                    break;
+                default:
+                    
+                    break;
+            }
+        });
+
+        res.render('alldata', { 
+            complaints: complaints, 
+            pendingCount: pendingCount,
+            processingCount: processingCount,
+            solvedCount: solvedCount
+        });
     });
 });
+
 
 app.get('/a/:branch/:roll/:ref_id', (req, res) => {
     const branch = req.params.branch;
@@ -196,73 +213,33 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
 
 
 
-// app.get('/:branch', (req, res) => {
-//     const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata','solved'];
-//     const branch = req.params.branch.toLowerCase(); 
-//     if (!validBranches.includes(branch)) {
-//         res.status(400).send('Invalid entry');
-//         return;
-//     }
-//     res.render('password', { branch: branch });
-// });
-
-// app.post('/:branch/complaints', (req, res) => {
-//     const password = req.body.password;
-//     if (password !== '12345') {
-//         res.status(401).send('Unauthorized');
-//         return;
-//     }
-//     const fetchComplaintsQuery = `SELECT * FROM ${req.params.branch.toLowerCase()}`;
-//     connection.query(fetchComplaintsQuery, (err, complaints) => {
-//         if (err) {
-//             console.error('Error fetching complaints:', err);
-//             res.status(500).send('Internal Server Error');
-//             return;
-//         }
-//         res.render('table', { branch: req.params.branch.toLowerCase(), complaints: complaints });
-//     });
-// });
 
 function authenticateBranch(req, res, next) {
-    // Check if the user is authenticated
     if (req.session.authenticated) {
-        // User is authenticated, proceed to the next middleware
         next();
     } else {
-        // User is not authenticated, render the branch-specific login page
         const branch = req.params.branch;
         res.render('branch-login', { branch });
     }
 }
 
-// // Route for rendering branch login page
-// app.get('/branch-login/:branch', (req, res) => {
-//     const branch = req.params.branch;
-//     res.render('branch-login', { branch: branch });
-// });
-// Route for handling branch login
 app.post('/:branch/login', (req, res) => {
     const password = req.body.password;
     const branch = req.params.branch;
-    // Check if password matches for the specific branch
-    // Implement your password verification logic here
-    if (password === '12345') { // Change this to your actual common password
-        // Password is correct, set session variable to mark authentication for the specific branch
-        req.session.authenticated = true; // Set session variable upon successful login
+   
+    if (password === '12345') { 
+        req.session.authenticated = true; 
    
         res.redirect(`/${branch}`);
     } else {
-        // Password is incorrect, redirect back to the branch login page for the specific branch
 
         res.send("wrong password");
     }
 });
 
 
-// Example branch route with authentication
 app.get('/:branch', authenticateBranch, (req, res) => {
-    // Only accessible if authenticated for any branch
-    // Your branch logic goes here
+    
     const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata','solved'];
     const branch = req.params.branch.toLowerCase(); 
     if (!validBranches.includes(branch)) {
