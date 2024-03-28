@@ -25,7 +25,7 @@ connection.connect((err) => {
 
 
 app.use(session({
-    secret: 'your_secret_key',
+    secret: 'shgvashggcfgcvcgv',
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } 
@@ -89,15 +89,15 @@ app.post('/submit_complaint', (req, res) => {
 
 
 
-function authenticate(req, res, next) {
-    if (req.session.authenticated) {
+function authenticateAdmin(req, res, next) {
+    if (req.session.authenticatedAdmin) {
         next();
     } else {
         res.render('admin-login');
     }
 }
 
-app.get('/admin', authenticate, (req, res) => {
+app.get('/admin', authenticateAdmin, (req, res) => {
   
     const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM complaints';
     connection.query(fetchComplaintsQuery, (err, complaints) => {
@@ -119,7 +119,7 @@ app.post('/admin/login', (req, res) => {
         res.status(401).send('Unauthorized');
         return;
     }
-    req.session.authenticated = true; 
+    req.session.authenticatedAdmin = true; 
     res.redirect('/admin');
 });
 
@@ -215,7 +215,7 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
 
 
 function authenticateBranch(req, res, next) {
-    if (req.session.authenticated) {
+    if (req.session.authenticatedHod) {
         next();
     } else {
         const branch = req.params.branch;
@@ -228,7 +228,7 @@ app.post('/:branch/login', (req, res) => {
     const branch = req.params.branch;
    
     if (password === '12345') { 
-        req.session.authenticated = true; 
+        req.session.authenticatedHod = true; 
    
         res.redirect(`/${branch}`);
     } else {
