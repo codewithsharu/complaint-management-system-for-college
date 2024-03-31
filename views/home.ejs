@@ -18,13 +18,13 @@
 }
 
 html,
-body {
+.body {
   height: 100%;
   min-height: 100vh;
   background-image:url(../public/images/bgr.jpg);
 }
 
-body {
+.body {
   display: grid;
   place-items: center;
   font-family: "League Spartan", system-ui, sans-serif;
@@ -196,52 +196,18 @@ header {
   padding: 10px 0;
 }
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-}
 
-.navbar__logo img {
-  height: 50px;
-}
-
-.navbar__menu {
-  list-style: none;
-  display: flex;
-}
-
-.navbar__menu li {
-  margin-right: 20px;
-}
-
-.navbar__menu li a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 16px;
-}
-
-.navbar__menu li a:hover {
-  color: #ddd;
-}
 
   </style>
 </head>
 <body>
   <header style="position: fixed; left:0; top:0; width: 100%;">
-    <nav class="navbar">
-      <div class="navbar__logo">
-        <img src="../public/images/AITAM Logo.png" alt="Logo">
-      </div>
-      <!-- <ul class="navbar__menu">
-        <li><a href="#student">STUDENT</a></li>
-        <li><a href="#hod">HOD</a></li>
-        <li><a href="#admin">ADMIN</a></li>
-      </ul> -->
+    <nav class="navbar" data-navbar>
+    
     </nav>
   </header>
   
+  <div class="body">
 <main class="main flow">
   <h1 style="  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;" class="main__heading">C O M P L I A N T &nbsp;&nbsp;P O R T A L</h1>
   <div class="main__cards cards">
@@ -304,6 +270,7 @@ header {
     <div class="overlay cards__inner"></div>
   </div>
 </main>
+</div>
 <script>
  console.clear();
  document.addEventListener('DOMContentLoaded', function() {
