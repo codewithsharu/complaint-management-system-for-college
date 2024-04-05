@@ -168,8 +168,8 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
     const rollNumber = req.params.roll;
     const refId = req.params.ref_id; 
 
-    const selectQuery = `SELECT * FROM complaints WHERE branch = ? AND roll_number = ?`;
-    connection.query(selectQuery, [branch, rollNumber], (err, results) => {
+    const selectQuery = `SELECT * FROM complaints WHERE ref_id = ? AND roll_number = ?`;
+    connection.query(selectQuery, [refId, rollNumber], (err, results) => {
         if (err) {
             console.error('Error selecting complaints:', err);
             return res.status(500).send('Error selecting complaints');

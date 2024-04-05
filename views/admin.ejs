@@ -98,16 +98,16 @@
     
     </header>
     <div class="container">
-        <h1 style=" font-size: medium; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">Admin Panel - Complaints</h1>
+        <h1 style="margin-top: 25px; font-size: medium; font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">Admin Panel - Complaints</h1>
         <table border="1">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Reference ID</th>
+                    <!-- <th>ID</th> -->
+                    <!-- <th>Reference ID</th> -->
                     <th>Roll Number</th>
                     <th>Message</th>
                     <th>Created At</th>
-                    <th>Status</th>
+                    <!-- <th>Status</th> -->
                     <th>Branch</th>
                     <th>Action</th>
                 </tr>
@@ -115,12 +115,12 @@
             <tbody>
                 <% complaints.forEach(function(complaint) { %>
                     <tr>
-                        <td><%= complaint.id %></td>
-                        <td><%= complaint.ref_id %></td> 
+                        <!-- <td><%= complaint.id %></td> -->
+                        <!-- <td><%= complaint.ref_id %></td>  -->
                         <td><%= complaint.roll_number %></td>
                         <td><%= complaint.message %></td>
                         <td><%= complaint.created_at %></td>
-                        <td><%= complaint.status %></td>
+                        <!-- <td><%= complaint.status %></td> -->
                         <td><%= complaint.branch %></td>
                         <td>
                             <form action="http://localhost:3000/a/<%= complaint.branch %>/<%= complaint.roll_number %>/<%= complaint.ref_id %>" method="get">
