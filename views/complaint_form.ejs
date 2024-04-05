@@ -216,9 +216,83 @@
     opacity: 0;
   }
 }
+
+
+.x1
+ {
+  width: 6em;
+  position: relative;
+  height: 2.5em;
+  border: 3px ridge #149CEA;
+  outline: none;
+  background-color: transparent;
+  color: white;
+  transition: 1s;
+  border-radius: 0.3em;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+.x1
+
+::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 3%;
+  width: 95%;
+  height: 40%;
+  background-color: #0C0C0C;
+  transition: 0.5s;
+  transform-origin: center;
+}
+
+.x1
+
+::before {
+  content: "";
+  transform-origin: center;
+  position: absolute;
+  top: 80%;
+  left: 3%;
+  width: 95%;
+  height: 40%;
+  background-color: #0C0C0C;
+  transition: 0.5s;
+}
+
+.x1
+
+:hover::before, .x1
+
+:hover::after {
+  transform: scale(0)
+}
+
+.x1
+
+:hover {
+  box-shadow: inset 0px 0px 25px #1479EA;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
     </style>
 </head>
 <body>
+  <header style="position: fixed; left:0; top:0; width: 100%;">
+    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #0C0C0C; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+        <img src="../public/images/AITAM Logo.png" alt="AITAM Logo" style="width: 150px;">
+        <ul style="list-style: none; display: flex; gap: 20px; margin: 0;">
+            <button class="x1"><a href="http://localhost:3000/" style="text-decoration: none; color: inherit;">Home</a></button>
+        </ul>
+    </nav>
+
+</header>
+
    <div>
    
     <form class="form" action="/submit_complaint" method="post">
@@ -238,11 +312,30 @@
         <br>
         <label for="complaintMessage">Enter Complaint:</label>
         <textarea id="complaintMessage" name="complaintMessage" rows="4" cols="50" required></textarea>
-        <br>
+        <p id="wordCount">Words remaining: 70</p>
+                <br>
         <button class="submit" type="submit">Submit Complaint</button>
     </form>
    </div>
-   
+   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+    var textarea = document.getElementById("complaintMessage");
+    var wordCount = document.getElementById("wordCount");
+    
+    textarea.addEventListener("input", function() {
+        var words = textarea.value.trim().split(/\s+/);
+        var remainingWords = 70 - words.length;
+        wordCount.textContent = "Words remaining: " + remainingWords;
+        
+        if (remainingWords < 0) {
+            // Remove excess words
+            textarea.value = words.slice(0, 70).join(' ');
+            wordCount.textContent = "Words remaining: 0";
+        }
+    });
+});
+
+   </script>
 </body>
 </html>
 
