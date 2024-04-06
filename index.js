@@ -240,7 +240,7 @@ app.post('/:branch/login', (req, res) => {
 
 app.get('/:branch', authenticateBranch, (req, res) => {
     
-    const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata','solved'];
+    const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata','mba','mt','it'];
     const branch = req.params.branch.toLowerCase(); 
     if (!validBranches.includes(branch)) {
         res.status(400).send('Invalid entry');
