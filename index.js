@@ -255,6 +255,7 @@ app.get('/:branch', authenticateBranch, (req, res) => {
             return;
         }
         res.render('table', { branch: req.params.branch.toLowerCase(), complaints: complaints });
+        
     });
 });
 
