@@ -113,14 +113,14 @@ span.solved {
             <tbody>
                 <% complaints.forEach(function(complaint) { %>
                     <tr>
-                        <td><%= complaint.type %></td>
-                        <td><%= complaint.roll_number %></td>
-                        <td><%= complaint.message %></td>
+                        <td><%= complaint.complaintType %></td>
+                        <td><%= complaint.rollNumber %></td>
+                        <td><%= complaint.complaintMessage %></td>
                         <!-- <td><%= complaint.created_at %></td> -->
                         <!-- <td><%= complaint.branch %></td> -->
                         <td>
                             <% if (complaint.status !== 'solved') { %>
-                                <form action="/mark_as_solved/<%= complaint.branch %>/<%= complaint.ref_id %>" method="POST">
+                                <form action="/mark_as_solved/<%= complaint.branch %>/<%= complaint.refId %>" method="POST">
                                     <button type="submit">Mark as Solved</button>
                                 </form>
                             <% } else { %>

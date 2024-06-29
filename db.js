@@ -35,7 +35,7 @@ const approvedSchema = new mongoose.Schema({
     rollNumber: { type: String, required: true },
     complaintType: { type: String, required: true },
     complaintMessage: { type: String, required: true },
-    refId: { type: String, required: true, unique: true }
+    refId: { type: String, required: true }
    
 });
 

@@ -197,6 +197,84 @@ app.get('/submit_complaint', (req, res) => {
 
 
 
+
+
+app.get('/a/:branch/:roll/:ref_id', async (req, res) => {
+    const branch = req.params.branch;
+    const rollNumber = req.params.roll;
+    const refId = req.params.ref_id;
+
+    console.log(refId);
+
+    try {
+        // Step 1: Fetch documents from MongoDB complaints collection using ref_id
+     
+        const complaints = await Complaint.find({ refId: refId});
+
+      
+
+        if (complaints.length === 0) {
+            return res.status(404).send('No complaints found for this branch and roll number');
+        }
+
+        console.log("FIRST STEP");
+        console.log(complaints);
+        console.log("SUCESS 1");
+
+
+
+
+                // Step 2: Insert documents into MongoDB approved collection
+            const insertDocs = complaints.map(complaint => ({
+                branch: complaint.branch,
+                rollNumber: complaint.rollNumber,
+                complaintMessage: complaint.complaintMessage,
+                refId: complaint.refId,
+                complaintType: complaint.complaintType
+            }));
+
+            console.log(complaints);
+
+            try {
+                const insertResult = await Approved.insertMany(insertDocs);
+                console.log(`Documents inserted successfully into Approved: ${insertResult}`);
+              
+                console.log("Inserted into Approved");
+            } catch (err) {
+                console.error(`Error inserting documents into Approved: ${err}`);
+                throw err; // Rethrow error to handle it in the catch block below
+            }
+
+        // Step 3: Update status to 'processing' in alldata collection at ref_id
+     
+        const updateResult = await Alldata.updateOne({ refid: refId }, { $set: { status: 'processing' } });
+
+        if (updateResult.modifiedCount === 0) {
+            throw new Error('No document found in alldata collection to update');
+        }
+
+
+        // Step 4: Delete one document from complaints collection
+        const deleteResult = await Complaint.deleteOne({ refId: refId });
+
+        if (deleteResult.deletedCount === 0) {
+            throw new Error('No document deleted from complaints collection');
+        }
+
+                    console.log('Complaints moved successfully');
+        res.redirect('/admin');
+    } catch (err) {
+        console.error('Error processing request:', err);
+        res.status(500).send('Internal Server Error');
+    } finally {
+         console.log("LAST STEP");
+    }
+});
+
+
+
+
+
 // ?????????????????????????????????????????????????????
 
 
@@ -250,74 +328,6 @@ app.get('/a/all', (req, res) => {
 });
 
 
-    app.get('/a/:branch/:roll/:ref_id', async (req, res) => {
-        const branch = req.params.branch;
-        const rollNumber = req.params.roll;
-        const refId = req.params.ref_id;
-
-        console.log(refId);
-
-        try {
-            // Step 1: Fetch documents from MongoDB complaints collection using ref_id
-         
-            const complaints = await Complaint.find({ refId: refId});
-
-          
-
-            if (complaints.length === 0) {
-                return res.status(404).send('No complaints found for this branch and roll number');
-            }
-
-            console.log("FIRST STEP");
-            console.log(complaints);
-            console.log("SUCESS");
-
-
-
-            // Step 2: Insert documents into MongoDB approved collection
-         
-
-          
-
-            const insertDocs = complaints.map(complaint => ({
-                branch: complaint.branch,
-                rollNumber: complaint.rollNumber,
-                complaintMessage: complaint. complaintMessage,
-                refId: complaint.refId,
-                complaintType: complaint.complaintType
-            }));
-            await Approved.insertMany(insertDocs);
-
-
-
-            // Step 3: Update status to 'processing' in alldata collection at ref_id
-         
-            const updateResult = await Alldata.updateOne({ refid: refId }, { $set: { status: 'processing' } });
-
-            if (updateResult.modifiedCount === 0) {
-                throw new Error('No document found in alldata collection to update');
-            }
-
-
-            // Step 4: Delete one document from complaints collection
-            const deleteResult = await Complaint.deleteOne({ refId: refId });
-
-            if (deleteResult.deletedCount === 0) {
-                throw new Error('No document deleted from complaints collection');
-            }
-
-                        console.log('Complaints moved successfully');
-            res.redirect('/admin');
-        } catch (err) {
-            console.error('Error processing request:', err);
-            res.status(500).send('Internal Server Error');
-        } finally {
-             console.log("LAST STEP");
-        }
-    });
-
-
-
 
 
 
@@ -344,27 +354,28 @@ app.post('/:branch/login', (req, res) => {
     }
 });
 
-
-app.get('/:branch', authenticateBranch, (req, res) => {
-    
-    const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata','mba','mt','it'];
+app.get('/:branch', authenticateBranch, async (req, res) => {
+    const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata', 'mba', 'mt', 'it'];
     const branch = req.params.branch.toLowerCase(); 
+    
     if (!validBranches.includes(branch)) {
         res.status(400).send('Invalid entry');
         return;
     }
+    
+    try {
+        // Query MongoDB collection using async/await
+        const complaints = await Approved.find({ branch: branch }).exec();
 
-    const fetchComplaintsQuery = `SELECT * FROM ${req.params.branch.toLowerCase()}`;
-    connection.query(fetchComplaintsQuery, (err, complaints) => {
-        if (err) {
-            console.error('Error fetching complaints:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        res.render('table', { branch: req.params.branch.toLowerCase(), complaints: complaints });
-        
-    });
+        // Render response
+        res.render('table', { branch: branch, complaints: complaints });
+    } catch (err) {
+        console.error('Error fetching complaints:', err);
+        res.status(500).send('Internal Server Error');
+    }
 });
+
+
 
 
 
