@@ -1,27 +1,105 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql');
-const app = express();
-const port = 3000;
-const path = require("path");
+const mongoose = require('mongoose');
 const qr = require('qrcode');
+const path = require("path");
+const { Complaint, Alldata,Approved } = require('./db'); 
+const app = express();
+const PORT = process.env.PORT || 3000;
 const favicon = require('serve-favicon');
 const session = require('express-session');
+// Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public')); // Example: serve static files from 'public' folder
+app.set('view engine', 'ejs'); // Example: set view engine to ejs for rendering templates
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'aitamportal'
+// MongoDB connection URL
+const mongoURI = 'mongodb://localhost:27017/cp';
+
+// Connect to MongoDB
+mongoose.connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 });
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL: ' + err.stack);
-        return;
+// Event listeners for MongoDB connection status
+mongoose.connection.on('connected', () => {
+    console.log('Connected to MongoDB');
+});
+
+mongoose.connection.on('error', (err) => {
+    console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.log('Disconnected from MongoDB');
+});
+
+
+
+// ??????? VERIFIED ??????
+
+
+function generateRefId() {
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+    const randomDigits = Math.floor(10000000 + Math.random() * 90000000); // Generate 8 random digits
+    return `${timestamp}${randomDigits}`;
+}app.post('/submit_complaint', async (req, res) => {
+    const { branch, rollNumber, complaintType, complaintMessage } = req.body;
+
+    // Generate refId
+    const refId = generateRefId();
+
+    try {
+        // Create a new complaint document
+        
+
+        console.log("check");
+
+        // Create a new Date object
+        const now = new Date();
+
+        // Get the current date components
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1; // Months are zero-indexed, so we add 1
+        const day = now.getDate();
+
+        const formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+
+        const newComplaint = new Complaint({
+            branch,
+            rollNumber,
+            complaintType,
+            complaintMessage,
+            refId,
+            createdDate: formattedDate
+        });
+
+
+        // Save complaint to MongoDB
+        const savedComplaint = await newComplaint.save();
+
+        // Insert refId into Alldata collection
+        const newData = new Alldata({
+            refid: refId,
+            status: 'pending',
+            createdDate:  formattedDate// Optionally set createdTime explicitly
+        });
+        await newData.save();
+
+        // Generate QR code URL
+        const qrCodeUrl = await qr.toDataURL(`http://localhost:${PORT}/c/qr/${refId}`);
+
+        // Render response with QR code URL and refId
+        res.render('complaint_ref_id', { qrCodeUrl, refId });
+
+    } catch (error) {
+        console.error('Error submitting complaint:', error);
+        res.status(500).send('Error submitting complaint');
     }
-    console.log('Connected to MySQL as id ' + connection.threadId);
 });
+
 
 
 app.use(session({
@@ -40,6 +118,10 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
+
+
+
+
 app.get('/', (req, res) => {
     res.render('home');
 });
@@ -52,40 +134,26 @@ app.get('/st/:branch', (req, res) => {
     const branch = req.params.branch;
     res.render('complaint_form', { branch: branch });
 });
-app.post('/submit_complaint', (req, res) => {
-    const branch = req.body.branch;
-    const rollNumber = req.body.rollNumber;
-    const complaintType = req.body.complaintType; 
-    const complaintMessage = req.body.complaintMessage;
+app.post('/c/check_complaint_status', async (req, res) => {
+    const refId = req.body.refId;
 
-    const insertComplaintQuery = `INSERT INTO complaints (branch, roll_number, type, message) VALUES (?, ?, ?, ?)`; // Include 'type' in the query
-    connection.query(insertComplaintQuery, [branch, rollNumber, complaintType, complaintMessage], (error, results) => {
-        if (error) {
-            console.error('Error inserting complaint:', error);
-            return res.status(500).send('Error submitting complaint');
+    try {
+        const data = await Alldata.findOne({ refid: refId });
+
+        console.log("DATA IS ");
+        console.log(data);
+
+        if (data) {
+            const status = data.status;
+            return res.render('complaint_status', { statusMessage: { status: status, refId: refId } });
+        } else {
+            return res.render('complaint_status', { statusMessage: { status: 'Invalid Ref ID', refId: refId } });
         }
-        
-        const fetchRefIdQuery = `SELECT ref_id FROM complaints WHERE id = ?`;
-        connection.query(fetchRefIdQuery, [results.insertId], (err, rows) => {
-            if (err) {
-                console.error('Error fetching ref_id:', err);
-                return res.status(500).send('Error fetching ref_id');
-            }
-            
-            const refId = rows[0].ref_id;
-
-            qr.toDataURL(`http://localhost:3000/c/qr/${refId}`, (err, url) => {
-                if (err) {
-                    console.error('Error generating QR code:', err);
-                    res.status(500).send('Error generating QR code');
-                } else {
-                    res.render('complaint_ref_id', { qrCodeUrl: url, refId: refId });
-                }
-            });
-        });
-    });
+    } catch (err) {
+        console.error('Error finding complaint:', err);
+        return res.status(500).send('Internal Server Error');
+    }
 });
-
 
 
 
@@ -96,19 +164,18 @@ function authenticateAdmin(req, res, next) {
         res.render('admin-login');
     }
 }
+app.get('/admin', authenticateAdmin, async (req, res) => {
+    try {
+        const complaints = await Complaint.find({});
 
-app.get('/admin', authenticateAdmin, (req, res) => {
-  
-    const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM complaints';
-    connection.query(fetchComplaintsQuery, (err, complaints) => {
-        if (err) {
-            console.error('Error fetching complaints:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
+        console.log(complaints);
         res.render('admin', { complaints: complaints });
-    });
+    } catch (err) {
+        console.error('Error fetching complaints from MongoDB:', err);
+        res.status(500).send('Internal Server Error');
+    }
 });
+
 
 
 
@@ -122,6 +189,26 @@ app.post('/admin/login', (req, res) => {
     req.session.authenticatedAdmin = true; 
     res.redirect('/admin');
 });
+
+// Example route: Display a form to submit a complaint
+app.get('/submit_complaint', (req, res) => {
+    res.render('complaint_form'); // Example: render a complaint form using an ejs template
+});
+
+
+
+// ?????????????????????????????????????????????????????
+
+
+
+
+
+
+
+
+
+
+
 
 app.get('/a/all', (req, res) => {
     const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id, solved_at  FROM alldata';
@@ -215,7 +302,7 @@ app.get('/a/:branch/:roll/:ref_id', (req, res) => {
 
 
 function authenticateBranch(req, res, next) {
-    if (req.session.authenticatedHod) {
+    if (req.session.authenticatedHod){
         next();
     } else {
         const branch = req.params.branch;
@@ -322,24 +409,24 @@ app.get('/c/check', (req, res) => {
 
 });
 
-app.post('/c/check_complaint_status', (req, res) => {
-    const refId = req.body.refId;
+// app.post('/c/check_complaint_status', (req, res) => {
+//     const refId = req.body.refId;
 
-    const selectQuery = `SELECT status FROM alldata WHERE ref_id = ?`;
-    connection.query(selectQuery, [refId], (err, results) => {
-        if (err) {
-            console.error('Error selecting complaint:', err);
-            return res.status(500).send('Internal Server Error');
-        }
+//     const selectQuery = `SELECT status FROM alldata WHERE ref_id = ?`;
+//     connection.query(selectQuery, [refId], (err, results) => {
+//         if (err) {
+//             console.error('Error selecting complaint:', err);
+//             return res.status(500).send('Internal Server Error');
+//         }
 
-        if (results.length > 0) {
-            const status = results[0].status;
-            return res.render('complaint_status', { statusMessage: { status: status, refId: refId } });
-        } else {
-            return res.render('complaint_status', { statusMessage: { status: 'Invalid Ref ID', refId: refId } });
-        }
-    });
-});
+//         if (results.length > 0) {
+//             const status = results[0].status;
+//             return res.render('complaint_status', { statusMessage: { status: status, refId: refId } });
+//         } else {
+//             return res.render('complaint_status', { statusMessage: { status: 'Invalid Ref ID', refId: refId } });
+//         }
+//     });
+// });
 
 
 
@@ -367,6 +454,14 @@ app.get('/c/qr/:refId', (req, res) => {
 
 
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+
+
+app.get('/', (req, res) => {
+    res.render('home');
 });
