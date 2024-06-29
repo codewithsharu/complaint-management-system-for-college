@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const qr = require('qrcode');
 const path = require("path");
-const { Complaint, Alldata } = require('./db'); 
+const { Complaint, Alldata,Approved } = require('./db'); 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const favicon = require('serve-favicon');
@@ -14,7 +14,7 @@ app.use(express.static('public')); // Example: serve static files from 'public' 
 app.set('view engine', 'ejs'); // Example: set view engine to ejs for rendering templates
 
 // MongoDB connection URL
-const mongoURI = 'mongodb://localhost:27017/your_database_name';
+const mongoURI = 'mongodb://localhost:27017/cp';
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, {
@@ -45,9 +45,7 @@ function generateRefId() {
     const timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
     const randomDigits = Math.floor(10000000 + Math.random() * 90000000); // Generate 8 random digits
     return `${timestamp}${randomDigits}`;
-}
-
-app.post('/submit_complaint', async (req, res) => {
+}app.post('/submit_complaint', async (req, res) => {
     const { branch, rollNumber, complaintType, complaintMessage } = req.body;
 
     // Generate refId
@@ -55,27 +53,40 @@ app.post('/submit_complaint', async (req, res) => {
 
     try {
         // Create a new complaint document
+        
+
+        console.log("check");
+
+        // Create a new Date object
+        const now = new Date();
+
+        // Get the current date components
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1; // Months are zero-indexed, so we add 1
+        const day = now.getDate();
+
+        const formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+
         const newComplaint = new Complaint({
             branch,
             rollNumber,
             complaintType,
             complaintMessage,
-            refId
+            refId,
+            createdDate: formattedDate
         });
+
 
         // Save complaint to MongoDB
         const savedComplaint = await newComplaint.save();
 
-        
-        console.log("INSERTING INTO ALLDATA");
         // Insert refId into Alldata collection
         const newData = new Alldata({
             refid: refId,
-            status: 'pending' // Default status for Alldata
+            status: 'pending',
+            createdDate:  formattedDate// Optionally set createdTime explicitly
         });
         await newData.save();
-        
-        console.log("AFTER INSERTING INTO ALLDATA");
 
         // Generate QR code URL
         const qrCodeUrl = await qr.toDataURL(`http://localhost:${PORT}/c/qr/${refId}`);
@@ -146,13 +157,6 @@ app.post('/c/check_complaint_status', async (req, res) => {
 
 
 
-// ?????????????????????????????????????????????????????
-
-
-
-
-
-
 function authenticateAdmin(req, res, next) {
     if (req.session.authenticatedAdmin) {
         next();
@@ -160,19 +164,18 @@ function authenticateAdmin(req, res, next) {
         res.render('admin-login');
     }
 }
+app.get('/admin', authenticateAdmin, async (req, res) => {
+    try {
+        const complaints = await Complaint.find({});
 
-app.get('/admin', authenticateAdmin, (req, res) => {
-  
-    const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id FROM complaints';
-    connection.query(fetchComplaintsQuery, (err, complaints) => {
-        if (err) {
-            console.error('Error fetching complaints:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
+        console.log(complaints);
         res.render('admin', { complaints: complaints });
-    });
+    } catch (err) {
+        console.error('Error fetching complaints from MongoDB:', err);
+        res.status(500).send('Internal Server Error');
+    }
 });
+
 
 
 
@@ -186,6 +189,26 @@ app.post('/admin/login', (req, res) => {
     req.session.authenticatedAdmin = true; 
     res.redirect('/admin');
 });
+
+// Example route: Display a form to submit a complaint
+app.get('/submit_complaint', (req, res) => {
+    res.render('complaint_form'); // Example: render a complaint form using an ejs template
+});
+
+
+
+// ?????????????????????????????????????????????????????
+
+
+
+
+
+
+
+
+
+
+
 
 app.get('/a/all', (req, res) => {
     const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id, solved_at  FROM alldata';
@@ -430,10 +453,7 @@ app.get('/c/qr/:refId', (req, res) => {
 
 
 
-// Example route: Display a form to submit a complaint
-app.get('/submit_complaint', (req, res) => {
-    res.render('complaint_form'); // Example: render a complaint form using an ejs template
-});
+
 
 // Start the server
 app.listen(PORT, () => {
