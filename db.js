@@ -26,4 +26,29 @@ const alldataSchema = new mongoose.Schema({
 // Create Alldata model
 const Alldata = mongoose.model('Alldata', alldataSchema);
 
-module.exports = { Complaint, Alldata };
+// ?????????
+
+
+// / Define Approved schema
+const approvedSchema = new mongoose.Schema({
+    branch: { type: String, required: true },
+    rollNumber: { type: String, required: true },
+    complaintType: { type: String, required: true },
+    complaintMessage: { type: String, required: true },
+    refId: { type: String, required: true, unique: true }
+   
+});
+
+
+
+const Approved = mongoose.model('Approved', approvedSchema);
+
+
+
+
+
+
+
+
+
+module.exports = { Complaint, Alldata ,Approved };
