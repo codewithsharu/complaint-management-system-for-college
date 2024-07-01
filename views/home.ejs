@@ -5,7 +5,7 @@
   <title></title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&display=swap">
   <meta charset="utf-8">
-  <title>Responsive Navigation Menu</title>
+  <title>complaint box</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,8 +37,8 @@ html,
 .body {
   height: 100%;
   min-height: 100vh;
-  background-image:url(../public/images/bgr.jpg);
-  /* background-color: #453F78; */
+  /* background-image:url(../public/images/bgr.jpg); */
+  background-color: white;
 }
 
 .body {
@@ -47,7 +47,7 @@ html,
   font-family: "League Spartan", system-ui, sans-serif;
   font-size: 1.1rem;
   line-height: 1.2;
-  background-color: #100034;
+  /* background-color: #100034; */
   color: #ddd;
 }
 
@@ -87,10 +87,19 @@ ul {
   grid-template-rows: auto auto auto 1fr;
   align-items: start;
   gap: 1.25em;
-  color: #eceff1;
-  background-color: #2b2b2b;
+  color: black;
+  background-color: #EEF2F7;
   border: 1px solid #eceff133;
   border-radius: 15px;
+  /* border: 2px solid black; */
+  box-shadow:
+  0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+  0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+  0 12.5px 10px rgba(0, 0, 0, 0.06),
+  0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+  0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+  0 100px 80px rgba(0, 0, 0, 0.12)
+;
 }
 
 .card:nth-child(1) {
@@ -143,7 +152,7 @@ ul {
   text-align: center;
   text-decoration: none;
   color: #fff;
-  background-color: #0d0d0d;
+  background-color: #050C9C;
   padding: 0.7em;
   border-radius: 10px;
   font-size: 1rem;
@@ -210,62 +219,31 @@ header {
 }
 
 /* navbar */
-.x1
- {
-  width: 10em;
-  position: relative;
-  height: 2.5em;
-  border: 3px ridge #149CEA;
-  outline: none;
-  background-color: transparent;
-  color: white;
-  transition: 1s;
-  border-radius: 0.3em;
-  font-size: 16px;
-  font-weight: bold;
+.cs {
+  border-radius: .25rem;
+  text-transform: uppercase;
+  font-style: normal;
+  font-weight: 400;
+  padding-left: 25px;
+  padding-right: 25px;
+  color: #fff;
+  -webkit-clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
+  clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
+  height: 40px;
+  font-size: 0.7rem;
+  line-height: 14px;
+  letter-spacing: 1.2px;
+  transition: .2s .1s;
+  background-image: linear-gradient(90deg,#1c1c1c,#6220fb);
+  border: 0 solid;
+  overflow: hidden;
+}
+
+.cs:hover {
   cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-}
-
-.x1
-
-::after {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: 3%;
-  width: 95%;
-  height: 40%;
-  background-color: #0C0C0C;
-  transition: 0.5s;
-  transform-origin: center;
-}
-
-.x1
-
-::before {
-  content: "";
-  transform-origin: center;
-  position: absolute;
-  top: 80%;
-  left: 3%;
-  width: 95%;
-  height: 40%;
-  background-color: #0C0C0C;
-  transition: 0.5s;
-}
-
-.x1
-
-:hover::before, .x1
-
-:hover::after {
-  transform: scale(0)
-}
-
-.x1
-:hover {
-
+  transition: all .3s ease-in;
+  padding-right: 30px;
+  padding-left: 30px;
 }
 a {
     text-decoration: none;
@@ -276,15 +254,15 @@ a {
 </head>
 <body>
     <header style="left:0; width: 100%; " >
-      <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #0C0C0C; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-        <img src="../public/images/AITAM Logo.png" alt="AITAM Logo" style="width: 180px;">
+      <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #EEF2F7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <img src="../public/images/AITAM Logo.png" alt="AITAM Logo" style="width: 200px;">
         <ul style="list-style: none; display: flex; gap: 20px; margin: 0;">
-          <button class="x1"><a href="https://complaint-management-system-for-college.onrender.com/c/check">Check Status</a></button>
-
+            <button class="cs"><a href="https://complaint-management-system-for-college.onrender.com/c/check">Check Status</a></button>
         </ul>
     </nav>
-    <nav style="display: flex; justify-content: center; align-items: center; padding: 10px 20px; background-color:transparent; color: snow; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-      <H1 style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Complaint Portal</H1>
+    
+    <nav style="display: flex; justify-content: center; align-items: center; padding: 10px 20px; background-color:transparent; color: black; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+      <H1 style="font-family:monospace; ">Complaint Portal</H1>
   </nav>
     </header>
 
