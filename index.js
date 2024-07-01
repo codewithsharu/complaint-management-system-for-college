@@ -14,7 +14,7 @@ app.use(express.static('public')); // Example: serve static files from 'public' 
 app.set('view engine', 'ejs'); // Example: set view engine to ejs for rendering templates
 
 // MongoDB connection URL
-const mongoURI = 'mongodb://localhost:27017/cp';
+const mongoURI = 'mongodb+srv://wbest5991:BuXQEithRk1oSOrW@cluster0.vnkbvtr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, {
