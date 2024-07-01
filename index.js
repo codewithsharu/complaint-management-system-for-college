@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const qr = require('qrcode');
 const path = require("path");
-const { Complaint, Alldata,Approved } = require('./db'); 
+const { Complaint, Alldata,Approved, Solved } = require('./db'); 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const favicon = require('serve-favicon');
@@ -273,13 +273,84 @@ app.get('/a/:branch/:roll/:ref_id', async (req, res) => {
 
 
 
+app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
+    
+    const branch = req.params.branch;
+    const refId = req.params.refId;
+    console.log("FIRST STEP");
+    console.log(refId);
+    // console.log(branch);
+    console.log("CHECK !");
+
+    try {
+        // Step 1: Fetch documents from MongoDB complaints collection using ref_id
+     
+        const complaints = await Approved.find({ refId: refId});
+
+      
+
+        if (complaints.length === 0) {
+            return res.status(404).send('No complaints found for this branch and roll number');
+        }
+
+        console.log("FIRST STEP");
+        console.log(complaints);
+        console.log("SUCESS 1");
+
+
+
+
+                // Step 2: Insert documents into MongoDB approved collection
+                const now = new Date();
+
+                // Get the current date components
+                const year = now.getFullYear();
+                const month = now.getMonth() + 1; // Months are zero-indexed, so we add 1
+                const day = now.getDate();
+        
+                const formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+        
+                const newComplaint = new Solved({
+            
+                    refid:refId,
+                    solvedDate: formattedDate
+                });
+
+                const savedComplaint = await newComplaint.save();
+        
+
+        // Step 3: Update status to 'processing' in alldata collection at ref_id
+     
+        const updateResult = await Alldata.updateOne({ refid: refId }, { $set: { status: 'solved' , solvedDate: formattedDate } });
+
+        if (updateResult.modifiedCount === 0) {
+            throw new Error('No document found in alldata collection to update');
+        }
+
+
+        // Step 4: Delete one document from complaints collection
+        const deleteResult = await Approved.deleteOne({ refId: refId });
+
+        if (deleteResult.deletedCount === 0) {
+            throw new Error('No document deleted from complaints collection');
+        }
+
+                    console.log('Complaints moved successfully');
+        res.redirect(`/${branch}`);
+    } catch (err) {
+        console.error('Error processing request:', err);
+        res.status(500).send('Internal Server Error');
+    } finally {
+         console.log("LAST STEP");
+    }
+});
+
+
+
+
 
 
 // ?????????????????????????????????????????????????????
-
-
-
-
 
 
 
@@ -379,58 +450,6 @@ app.get('/:branch', authenticateBranch, async (req, res) => {
 
 
 
-
-
-app.post('/mark_as_solved/:branch/:refId', (req, res) => {
-    const branch = req.params.branch;
-    const refId = req.params.refId;
-
-    const sourceTable = branch; 
-
-    const updateStatusQuery = `UPDATE alldata SET status = 'solved' WHERE ref_id = ?`;
-    connection.query(updateStatusQuery, [refId], (err, result) => {
-        if (err) {
-            console.error('Error updating status in alldata table:', err);
-            return res.status(500).send('Error updating status in alldata table');
-        }
-
-        const selectQuery = `SELECT * FROM ${sourceTable} WHERE ref_id = ?`;
-        connection.query(selectQuery, [refId], (err, results) => {
-            if (err) {
-                console.error('Error selecting complaint:', err);
-                return res.status(500).send('Error selecting complaint');
-            }
-
-            if (results.length === 0) {
-                return res.status(404).send('No complaint found with this ref id');
-            }
-
-            const complaint = results[0];
-
-            const insertQuery = `INSERT INTO solved (branch, roll_number, message, created_at, status, ref_id, type) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-            const values = [complaint.branch, complaint.roll_number, complaint.message, complaint.created_at, 'solved', refId,complaint.type];
-
-            connection.query(insertQuery, values, (err, result) => {
-                if (err) {
-                    console.error('Error inserting complaint into solved table:', err);
-                    return res.status(500).send('Error moving complaint to solved table');
-                }
-
-                const deleteQuery = `DELETE FROM ${sourceTable} WHERE ref_id = ?`;
-                connection.query(deleteQuery, [refId], (err, result) => {
-                    if (err) {
-                        console.error('Error deleting complaint from source table:', err);
-                        return res.status(500).send('Error deleting complaint');
-                    }
-
-                    console.log('Complaint marked as solved and moved to solved table successfully');
-                    res.redirect(`/${sourceTable}`);
-
-                });
-            });
-        });
-    });
-});
 
 
 app.get('/c/check', (req, res) => {

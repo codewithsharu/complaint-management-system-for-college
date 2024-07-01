@@ -19,6 +19,7 @@ const Complaint = mongoose.model('Complaint', complaintSchema);
 const alldataSchema = new mongoose.Schema({
     refid: { type: String, required: true, unique: true },
     status: { type: String, default: 'pending' },
+    message:{type:String},
     createdDate: {type:String},
     solvedDate: {type:String}
 });
@@ -43,12 +44,11 @@ const approvedSchema = new mongoose.Schema({
 
 const Approved = mongoose.model('Approved', approvedSchema);
 
+const solvedSchema = new mongoose.Schema({
+    refid: { type: String, required: true, unique: true },
+    solvedDate: {type:String}
+});
 
+const Solved = mongoose.model('Solved', solvedSchema);
 
-
-
-
-
-
-
-module.exports = { Complaint, Alldata ,Approved };
+module.exports = { Complaint, Alldata ,Approved,Solved };
