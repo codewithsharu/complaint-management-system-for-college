@@ -283,11 +283,10 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
     const refId = req.params.refId;
     console.log("FIRST STEP");
     console.log(refId);
-    // console.log(branch);
     console.log("CHECK !");
 
     try {
-        // Step 1: Fetch documents from MongoDB complaints collection using ref_id
+        // Step 1: Fetch documents from MongoDB Approved collection using ref_id
      
         const complaints = await Approved.find({ refId: refId});
 
@@ -304,12 +303,11 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
 
 
 
-                // Step 2: Insert documents into MongoDB approved collection
+                // Step 2: Insert documents into MongoDB solved collection
                 const now = new Date();
 
-                // Get the current date components
                 const year = now.getFullYear();
-                const month = now.getMonth() + 1; // Months are zero-indexed, so we add 1
+                const month = now.getMonth() + 1;
                 const day = now.getDate();
         
                 const formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
@@ -323,7 +321,7 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
                 const savedComplaint = await newComplaint.save();
         
 
-        // Step 3: Update status to 'processing' in alldata collection at ref_id
+        // Step 3: Update status to 'solved' in alldata collection at ref_id
      
         const updateResult = await Alldata.updateOne({ refid: refId }, { $set: { status: 'solved' , solvedDate: formattedDate } });
 
@@ -332,7 +330,7 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
         }
 
 
-        // Step 4: Delete one document from complaints collection
+        // Step 4: Delete one document from approved collection
         const deleteResult = await Approved.deleteOne({ refId: refId });
 
         if (deleteResult.deletedCount === 0) {
@@ -348,19 +346,6 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
          console.log("LAST STEP");
     }
 });
-
-
-
-
-
-
-// ?????????????????????????????????????????????????????
-
-
-
-
-
-
 
 
 app.get('/a/all', async (req, res) => {
@@ -386,7 +371,7 @@ app.get('/a/all', async (req, res) => {
                     solvedCount++;
                     break;
                 default:
-                    // Handle any other statuses if needed
+                 
                     break;
             }
         });
@@ -399,15 +384,10 @@ app.get('/a/all', async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        // Handle errors appropriately
+       
         res.status(500).send('Internal Server Error');
     }
 });
-
-
-
-
-
 
 
 function authenticateBranch(req, res, next) {
@@ -458,17 +438,12 @@ app.get('/:branch', authenticateBranch, async (req, res) => {
 
 
 
-
-
 app.get('/c/check', (req, res) => {
     const statusMessage = req.query.statusMessage || 'No status message available';
     res.render('complaint_status', { statusMessage: statusMessage });
 
 
 });
-
-
-
 
 
 
