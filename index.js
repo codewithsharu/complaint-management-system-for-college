@@ -364,8 +364,11 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
 
 
 app.get('/a/all', async (req, res) => {
+    console.log("ALL DATA");
     try {
         const complaints = await Alldata.find();
+
+        console.log(complaints);
 
         let pendingCount = 0;
         let processingCount = 0;
@@ -440,10 +443,10 @@ app.get('/:branch', authenticateBranch, async (req, res) => {
     }
     
     try {
-        // Query MongoDB collection using async/await
+     
         const complaints = await Approved.find({ branch: branch }).exec();
 
-        // Render response
+      
         res.render('table', { branch: branch, complaints: complaints });
     } catch (err) {
         console.error('Error fetching complaints:', err);
@@ -464,46 +467,33 @@ app.get('/c/check', (req, res) => {
 
 });
 
-// app.post('/c/check_complaint_status', (req, res) => {
-//     const refId = req.body.refId;
-
-//     const selectQuery = `SELECT status FROM alldata WHERE ref_id = ?`;
-//     connection.query(selectQuery, [refId], (err, results) => {
-//         if (err) {
-//             console.error('Error selecting complaint:', err);
-//             return res.status(500).send('Internal Server Error');
-//         }
-
-//         if (results.length > 0) {
-//             const status = results[0].status;
-//             return res.render('complaint_status', { statusMessage: { status: status, refId: refId } });
-//         } else {
-//             return res.render('complaint_status', { statusMessage: { status: 'Invalid Ref ID', refId: refId } });
-//         }
-//     });
-// });
 
 
 
 
 
-app.get('/c/qr/:refId', (req, res) => {
+app.get('/c/qr/:refId',async (req, res) => {
+   
+
     const refId = req.params.refId;
 
-    const selectQuery = `SELECT status FROM alldata WHERE ref_id = ?`;
-    connection.query(selectQuery, [refId], (err, results) => {
-        if (err) {
-            console.error('Error selecting complaint:', err);
-            return res.status(500).send('Internal Server Error');
-        }
+    try {
+        const data = await Alldata.findOne({ refid: refId });
 
-        if (results.length > 0) {
-            const status = results[0].status;
+        console.log("DATA IS ");
+        console.log(data);
+
+        if (data) {
+            const status = data.status;
             return res.render('complaint_status', { statusMessage: { status: status, refId: refId } });
         } else {
             return res.render('complaint_status', { statusMessage: { status: 'Invalid Ref ID', refId: refId } });
         }
-    });
+    } catch (err) {
+        console.error('Error finding complaint:', err);
+        return res.status(500).send('Internal Server Error');
+    }
+   
 });
 
 
