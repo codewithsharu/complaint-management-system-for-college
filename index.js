@@ -45,7 +45,10 @@ function generateRefId() {
     const timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
     const randomDigits = Math.floor(10000000 + Math.random() * 90000000); // Generate 8 random digits
     return `${timestamp}${randomDigits}`;
-}app.post('/submit_complaint', async (req, res) => {
+}
+
+
+app.post('/submit_complaint', async (req, res) => {
     const { branch, rollNumber, complaintType, complaintMessage } = req.body;
 
     // Generate refId
@@ -84,6 +87,7 @@ function generateRefId() {
         const newData = new Alldata({
             refid: refId,
             status: 'pending',
+            message:complaintMessage,
             createdDate:  formattedDate// Optionally set createdTime explicitly
         });
         await newData.save();
@@ -359,15 +363,10 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
 
 
 
-app.get('/a/all', (req, res) => {
-    const fetchComplaintsQuery = 'SELECT id, branch, roll_number, message, created_at, status, ref_id, solved_at  FROM alldata';
-    connection.query(fetchComplaintsQuery, (err, complaints) => {
-        if (err) {
-            console.error('Error fetching complaints:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        
+app.get('/a/all', async (req, res) => {
+    try {
+        const complaints = await Alldata.find();
+
         let pendingCount = 0;
         let processingCount = 0;
         let solvedCount = 0;
@@ -384,7 +383,7 @@ app.get('/a/all', (req, res) => {
                     solvedCount++;
                     break;
                 default:
-                    
+                    // Handle any other statuses if needed
                     break;
             }
         });
@@ -395,8 +394,14 @@ app.get('/a/all', (req, res) => {
             processingCount: processingCount,
             solvedCount: solvedCount
         });
-    });
+    } catch (error) {
+        console.error(error);
+        // Handle errors appropriately
+        res.status(500).send('Internal Server Error');
+    }
 });
+
+
 
 
 
