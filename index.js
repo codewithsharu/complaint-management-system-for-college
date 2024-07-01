@@ -8,21 +8,21 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const favicon = require('serve-favicon');
 const session = require('express-session');
-// Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public')); // Example: serve static files from 'public' folder
-app.set('view engine', 'ejs'); // Example: set view engine to ejs for rendering templates
 
-// MongoDB connection URL
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public')); 
+app.set('view engine', 'ejs');
+
+
 const mongoURI = 'mongodb+srv://wbest5991:BuXQEithRk1oSOrW@cluster0.vnkbvtr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
-// Connect to MongoDB
+
 mongoose.connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
 
-// Event listeners for MongoDB connection status
+
 mongoose.connection.on('connected', () => {
     console.log('Connected to MongoDB');
 });
@@ -37,7 +37,6 @@ mongoose.connection.on('disconnected', () => {
 
 
 
-// ??????? VERIFIED ??????
 
 
 function generateRefId() {
@@ -51,21 +50,21 @@ function generateRefId() {
 app.post('/submit_complaint', async (req, res) => {
     const { branch, rollNumber, complaintType, complaintMessage } = req.body;
 
-    // Generate refId
+  
     const refId = generateRefId();
 
     try {
-        // Create a new complaint document
+  
         
 
         console.log("check");
 
-        // Create a new Date object
+    
         const now = new Date();
 
-        // Get the current date components
+        
         const year = now.getFullYear();
-        const month = now.getMonth() + 1; // Months are zero-indexed, so we add 1
+        const month = now.getMonth() + 1;
         const day = now.getDate();
 
         const formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
@@ -80,22 +79,22 @@ app.post('/submit_complaint', async (req, res) => {
         });
 
 
-        // Save complaint to MongoDB
+       
         const savedComplaint = await newComplaint.save();
 
-        // Insert refId into Alldata collection
+       
         const newData = new Alldata({
             refid: refId,
             status: 'pending',
             message:complaintMessage,
-            createdDate:  formattedDate// Optionally set createdTime explicitly
+            createdDate:  formattedDate
         });
         await newData.save();
 
-        // Generate QR code URL
-        const qrCodeUrl = await qr.toDataURL(`http://localhost:${PORT}/c/qr/${refId}`);
+      
+        const qrCodeUrl = await qr.toDataURL(`https://complaint-management-system-for-college.onrender.com/c/qr/${refId}`);
 
-        // Render response with QR code URL and refId
+      
         res.render('complaint_ref_id', { qrCodeUrl, refId });
 
     } catch (error) {
@@ -194,9 +193,9 @@ app.post('/admin/login', (req, res) => {
     res.redirect('/admin');
 });
 
-// Example route: Display a form to submit a complaint
+
 app.get('/submit_complaint', (req, res) => {
-    res.render('complaint_form'); // Example: render a complaint form using an ejs template
+    res.render('complaint_form'); 
 });
 
 
@@ -246,7 +245,7 @@ app.get('/a/:branch/:roll/:ref_id', async (req, res) => {
                 console.log("Inserted into Approved");
             } catch (err) {
                 console.error(`Error inserting documents into Approved: ${err}`);
-                throw err; // Rethrow error to handle it in the catch block below
+                throw err; 
             }
 
         // Step 3: Update status to 'processing' in alldata collection at ref_id
