@@ -65,78 +65,51 @@
             
         }
 
-        
-.x1
- {
-  width: 6em;
-  position: relative;
-  height: 2.5em;
-  border: 3px ridge #149CEA;
-  outline: none;
-  background-color: transparent;
-  color: white;
-  transition: 1s;
-  border-radius: 0.3em;
-  font-size: 16px;
-  font-weight: bold;
+        .cs {
+  border-radius: .25rem;
+  text-transform: uppercase;
+  font-style: normal;
+  font-weight: 400;
+  padding-left: 25px;
+  padding-right: 25px;
+  color: #fff;
+  -webkit-clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
+  clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
+  height: 40px;
+  font-size: 0.7rem;
+  line-height: 14px;
+  letter-spacing: 1.2px;
+  transition: .2s .1s;
+  background-image: linear-gradient(90deg,#1c1c1c,#6220fb);
+  border: 0 solid;
+  overflow: hidden;
+;
+}
+
+.cs:hover {
   cursor: pointer;
-  font-family: 'Poppins', sans-serif;
+  transition: all .3s ease-in;
+  padding-right: 30px;
+  padding-left: 30px;
 }
-
-.x1
-
-::after {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: 3%;
-  width: 95%;
-  height: 40%;
-  background-color: #0C0C0C;
-  transition: 0.5s;
-  transform-origin: center;
-}
-
-.x1
-
-::before {
-  content: "";
-  transform-origin: center;
-  position: absolute;
-  top: 80%;
-  left: 3%;
-  width: 95%;
-  height: 40%;
-  background-color: #0C0C0C;
-  transition: 0.5s;
-}
-
-.x1
-
-:hover::before, .x1
-
-:hover::after {
-  transform: scale(0)
-}
-
-.x1
 
 
 a {
-    text-decoration: none;
-    color: inherit;
+   
 }
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
-<body style="background: #333A73;">
+<body >
     <header style="position: fixed; left:0; top:0; width: 100%; ">
-        <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #0C0C0C; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-            <img src="../public/images/AITAM Logo.png" alt="AITAM Logo" style="width: 150px;">
+        <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #EEF2F7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            <img src="../public/images/AITAM Logo.png" alt="AITAM Logo" style="width: 200px;">
             <ul style="list-style: none; display: flex; gap: 20px; margin: 0;">
-                <button class="x1"><a href="https://complaint-management-system-for-college.onrender.com/admin" style="text-decoration: none; color: inherit;">Admin</a></button>
+                <button class="cs"><a style="  text-decoration: none;
+  color: inherit" href="https://complaint-management-system-for-college.onrender.com/">Home</a></button>
+                <button class="cs"><a style="  text-decoration: none;
+  color: inherit" href="https://complaint-management-system-for-college.onrender.com/a/all">Admin</a></button>
 
-                <button class="x1"><a href="https://complaint-management-system-for-college.onrender.com/" style="text-decoration: none; color: inherit;">Home</a></button>
             </ul>
         </nav>
     
@@ -189,6 +162,8 @@ a {
     </div>
 
     <script>
+
+        
         function toggleSection(sectionId) {
             var sectionContent = document.getElementById(sectionId + '-content');
             var closeBtn = document.querySelector('#' + sectionId + '-section .close-btn');
