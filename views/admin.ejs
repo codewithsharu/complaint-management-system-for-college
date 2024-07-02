@@ -15,7 +15,7 @@
 
         .container {
             max-width: 100%;
-            margin: 20px;
+       
             background-color: #f0f0f0; /* Light gray background */
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Box shadow */
@@ -147,7 +147,7 @@ td:nth-child(1) {
     </style>
 </head>
 <body>
-    <header style="position: fixed; left:0; top:0; width: 100%;">
+    <header style=" left:0; top:0; width: 100%;">
         <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #EEF2F7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
             <img src="../public/images/AITAM Logo.png" alt="AITAM Logo" style="width: 200px;">
             <ul style="list-style: none; display: flex; gap: 20px; margin: 0;">
@@ -157,7 +157,7 @@ td:nth-child(1) {
             </ul>
         </nav>
     </header>
-    <h1 style="text-align: center; margin-top:5%; color: #333;">Admin Panel - Complaints</h1>
+    <h1 style="text-align: center;  color: #333;">Admin Panel - Complaints</h1>
     <div class="container">       
         <table border="1">
             <thead>
@@ -192,5 +192,10 @@ td:nth-child(1) {
             </tbody>
         </table>
     </div>
+
+    <footer>
+        <%- include('footer') %>
+
+    </footer>
 </body>
 </html>
