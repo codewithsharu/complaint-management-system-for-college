@@ -181,6 +181,8 @@ a {
     <div>
         <form class="form" action="/submit_complaint" method="post">
             <p class="title">Register </p>
+            <p class="message">branch : <%= branch %> </p>
+            <input class="input" type="hidden" name="branch" value="<%= branch%>">
             <label for="rollNumber">Enter Roll Number:</label>
             <input class="input" type="text" id="rollNumber" name="rollNumber" required>
             <br>
@@ -195,7 +197,7 @@ a {
             <label for="complaintMessage">Enter Complaint:</label>
             <textarea id="complaintMessage" name="complaintMessage" rows="4" cols="50" required></textarea>
             <p id="wordCount">Words remaining: 70</p>
-            <br>
+                    <br>
             <button class="submit" type="submit">Submit Complaint</button>
         </form>
     </div>
