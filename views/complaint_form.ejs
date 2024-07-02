@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complaint Form</title>
     <style>
+
+        
         /* General body styles */
-        body {
+        .body1 {
             font-family: Arial, sans-serif;
             margin: 0;
             display: flex;
@@ -169,6 +171,8 @@ a {
     </style>
 </head>
 <body>
+
+<div class="body1">
     <header style="position: fixed; left:0; top:0; width: 100%;">
         <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #EEF2F7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
             <img src="../public/images/AITAM Logo.png" alt="AITAM Logo" style="width: 200px;">
@@ -201,7 +205,13 @@ a {
             <button class="submit" type="submit">Submit Complaint</button>
         </form>
     </div>
+</div>
 
+<footer>
+    <%- include('footer') %>
+  </footer>
+    
+  
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var textarea = document.getElementById("complaintMessage");
@@ -220,6 +230,8 @@ a {
             });
         });
     </script>
+
+   
 </body>
 </html>
 
