@@ -18,7 +18,7 @@
         }
         .dashboard-section {
             margin-top: 20px;
-            background: rgba(255, 255, 255, 0.06);
+            background:#402E7A;
             border: 1px solid rgba(255, 255, 255, 0.01);
             backdrop-filter: blur(12px);
             padding: 20px;
@@ -97,6 +97,7 @@
 a {
    
 }
+
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
@@ -119,7 +120,7 @@ a {
 
     <div class="dashboard-section" id="processing-section">
         <div class="section-header" onclick="toggleSection('processing')">Processing Complaints <span class="badge bg-default" style="color:white; background-color: red;font-size:medium; padding:6px; border-radius:50% ;"><%=    processingCount%></span></div>
-        <button class="close-btn" onclick="closeSection('processing')">x</button>
+        <button class="close-btn" onclick="closeSection('processing')">CLOSE</button>
         <div id="processing-content">
             <% complaints.filter(complaint => complaint.status === 'processing').forEach(function(complaint) { %>
                 <div class="complaint processing">
@@ -133,7 +134,7 @@ a {
 
     <div class="dashboard-section" id="pending-section">
         <div class="section-header" onclick="toggleSection('pending')">Pending Complaints <span class="badge bg-default" style="color:white; background-color: red; font-size:medium; padding:6px; border-radius:50% ; "><%=    pendingCount%></span></div>
-        <button class="close-btn" onclick="closeSection('pending')">x</button>
+        <button class="close-btn" onclick="closeSection('pending')">CLOSE</button>
         <div id="pending-content">
             <% complaints.filter(complaint => complaint.status === 'pending').forEach(function(complaint) { %>
                 <div class="complaint pending">
@@ -147,14 +148,14 @@ a {
 
     <div class="dashboard-section" id="solved-section">
         <div class="section-header" onclick="toggleSection('solved')">Solved Complaints <span class="badge bg-default" style="color:white; background-color: red; font-size:medium; padding:6px; border-radius:50% ;"><%=    solvedCount%></span></div>
-        <button class="close-btn" onclick="closeSection('solved')">x</button>
+        <button class="close-btn" onclick="closeSection('solved')">CLOSE</button>
         <div id="solved-content">
             <% complaints.filter(complaint => complaint.status === 'solved').forEach(function(complaint) { %>
                 <div class="complaint solved">
-                    <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
+                    <strong>Reference ID:</strong> <%= complaint.refid %><br>
                     <strong>Message:</strong> <%= complaint.message %><br>
-                    <strong>Created At:</strong> <%= complaint.created_at %><br>
-                    <strong>solved At:</strong> <%= complaint.solved_at %><br>
+                    <strong>Created At:</strong> <%= complaint.createdDate %><br>
+                    <strong>solved At:</strong> <%= complaint.solvedDate %><br>
 
                 </div>
             <% }); %>
