@@ -14,7 +14,8 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 
-const mongoURI = 'mongodb+srv://wbest5991:BuXQEithRk1oSOrW@cluster0.vnkbvtr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+// const mongoURI = 'mongodb+srv://wbest5991:BuXQEithRk1oSOrW@cluster0.vnkbvtr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+ const mongoURI = 'mongodb://localhost:27017/cp'
 
 
 mongoose.connect(mongoURI, {

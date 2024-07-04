@@ -124,9 +124,9 @@ a {
         <div id="processing-content">
             <% complaints.filter(complaint => complaint.status === 'processing').forEach(function(complaint) { %>
                 <div class="complaint processing">
-                    <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
+                    <strong>Reference ID:</strong> <%= complaint.refid %><br>
                     <strong>Message:</strong> <%= complaint.message %><br>
-                    <strong>Created At:</strong> <%= complaint.created_at %><br>
+                    <strong>Created At:</strong> <%= complaint.createDate %><br>
                 </div>
             <% }); %>
         </div>
@@ -138,9 +138,9 @@ a {
         <div id="pending-content">
             <% complaints.filter(complaint => complaint.status === 'pending').forEach(function(complaint) { %>
                 <div class="complaint pending">
-                    <strong>Reference ID:</strong> <%= complaint.ref_id %><br>
+                    <strong>Reference ID:</strong> <%= complaint.refid %><br>
                     <strong>Message:</strong> <%= complaint.message %><br>
-                    <strong>Created At:</strong> <%= complaint.created_at %><br>
+                    <strong>Created At:</strong> <%= complaint.createdDate %><br>
                 </div>
             <% }); %>
         </div>
