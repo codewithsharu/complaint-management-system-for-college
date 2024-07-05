@@ -93,7 +93,7 @@ app.post('/submit_complaint', async (req, res) => {
         await newData.save();
 
       
-        const qrCodeUrl = await qr.toDataURL(`complaint-management-system-for-college-2bte.onrender.com/c/qr/${refId}`);
+        const qrCodeUrl = await qr.toDataURL(`https://complaint-management-system-for-college-2bte.onrender.com/c/qr/${refId}`);
 
       
         res.render('complaint_ref_id', { qrCodeUrl, refId });
