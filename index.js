@@ -130,6 +130,10 @@ app.get('/', (req, res) => {
     res.render('home');
 });
 
+app.get('/hod', (req, res) => {
+    res.render('hod');
+});
+
 app.get('/st', (req, res) => {
     res.render('select_table');
 });
