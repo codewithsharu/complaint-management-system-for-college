@@ -126,9 +126,52 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
-app.get('/', (req, res) => {
-    res.render('home');
+// app.get('/', (req, res) => {
+//     res.render('home');
+// });
+
+
+app.get('/', async (req, res) => {
+    console.log("home checkk");
+    try {
+        const complaints = await Alldata.find();
+
+        console.log(complaints);
+
+        let pendingCount = 0;
+        let processingCount = 0;
+        let solvedCount = 0;
+
+        complaints.forEach(complaint => {
+            switch (complaint.status) {
+                case 'pending':
+                    pendingCount++;
+                    break;
+                case 'processing':
+                    processingCount++;
+                    break;
+                case 'solved':
+                    solvedCount++;
+                    break;
+                default:
+                 
+                    break;
+            }
+        });
+
+        res.render('home', { 
+            complaints: complaints, 
+            pendingCount: pendingCount,
+            processingCount: processingCount,
+            solvedCount: solvedCount
+        });
+    } catch (error) {
+        console.error(error);
+       
+        res.status(500).send('Internal Server Error');
+    }
 });
+
 
 app.get('/hod', (req, res) => {
     res.render('hod');
