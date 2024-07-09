@@ -19,7 +19,8 @@ const Complaint = mongoose.model('Complaint', complaintSchema);
 const alldataSchema = new mongoose.Schema({
     refid: { type: String, required: true, unique: true },
     status: { type: String, default: 'pending' },
-    message:{type:String},
+    message:{ type: String, required: true},
+    mail:{type:String },
     rollNumber:{type:String},
     createdDate: {type:String},
     solvedDate: {type:String}

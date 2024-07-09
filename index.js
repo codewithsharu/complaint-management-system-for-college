@@ -3,15 +3,27 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const qr = require('qrcode');
 const path = require("path");
-const { Complaint, Alldata,Approved, Solved } = require('./db'); 
+const { Complaint, Alldata, Solved } = require('./db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const favicon = require('serve-favicon');
 const session = require('express-session');
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public')); 
+app.use(express.static('public'));
 app.set('view engine', 'ejs');
+var nodemailer = require('nodemailer');
+const moment = require('moment');
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'aitamportal@gmail.com',
+        pass: 'qcme sudk hmtj rdox'
+    }
+});
+
+
 
 
 const mongoURI = 'mongodb+srv://wbest5991:BuXQEithRk1oSOrW@cluster0.vnkbvtr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
@@ -49,21 +61,21 @@ function generateRefId() {
 
 
 app.post('/submit_complaint', async (req, res) => {
-    const { branch, rollNumber, complaintType, complaintMessage } = req.body;
+    const { branch, rollNumber, email, complaintType, complaintMessage } = req.body;
 
-  
+
     const refId = generateRefId();
 
     try {
-  
-        
+
+
 
         console.log("check");
 
-    
+
         const now = new Date();
 
-        
+
         const year = now.getFullYear();
         const month = now.getMonth() + 1;
         const day = now.getDate();
@@ -80,24 +92,56 @@ app.post('/submit_complaint', async (req, res) => {
         });
 
 
-       
+
         const savedComplaint = await newComplaint.save();
 
-       
+
         const newData = new Alldata({
             refid: refId,
             status: 'pending',
-            message:complaintMessage,
+            message: complaintMessage,
             rollNumber: rollNumber,
-            createdDate:  formattedDate
+            mail: email,
+            createdDate: formattedDate
         });
         await newData.save();
 
-      
+
         const qrCodeUrl = await qr.toDataURL(`https://complaint-management-system-for-college-2bte.onrender.com/c/qr/${refId}`);
 
-      
+
         res.render('complaint_ref_id', { qrCodeUrl, refId });
+
+
+        // Get current date and time formatted
+        const formattedDateTime = moment().format('MMMM Do YYYY, h:mm:ss a');
+
+        // HTML-formatted email content
+        var mailOptions = {
+            from: 'aitamportal@gmail.com',
+            to: `${email}`,
+            subject: 'Complaint Registration Confirmation',
+            html: `
+        <p>Dear User,</p>
+        <p>Your complaint has been successfully registered with AITAM Portal.</p>
+        <p><strong>Reference ID:</strong> ${refId}</p>
+        <p>Date & Time: ${formattedDateTime}</p>
+        <p>Thank you for using our service.</p>
+        <a href="https://complaint-management-system-for-college-2bte.onrender.com/c/qr/${refId}" target="_blank">CHECK-STATUS</a>
+
+        <p>Best regards,<br>AITAM Portal Team</p>
+    `
+        };
+
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+
 
     } catch (error) {
         console.error('Error submitting complaint:', error);
@@ -111,10 +155,10 @@ app.use(session({
     secret: 'shgvashggcfgcvcgv',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } 
+    cookie: { secure: false }
 }));
 
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico'))); 
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use('/public/images/', express.static('./public/images'));
 
 app.set("views", path.join(__dirname, "/views"));
@@ -155,20 +199,20 @@ app.get('/', async (req, res) => {
                     solvedCount++;
                     break;
                 default:
-                 
+
                     break;
             }
         });
 
-        res.render('home', { 
-            complaints: complaints, 
+        res.render('home', {
+            complaints: complaints,
             pendingCount: pendingCount,
             processingCount: processingCount,
             solvedCount: solvedCount
         });
     } catch (error) {
         console.error(error);
-       
+
         res.status(500).send('Internal Server Error');
     }
 });
@@ -238,13 +282,13 @@ app.post('/admin/login', (req, res) => {
         res.status(401).send('Unauthorized');
         return;
     }
-    req.session.authenticatedAdmin = true; 
+    req.session.authenticatedAdmin = true;
     res.redirect('/admin');
 });
 
 
 app.get('/submit_complaint', (req, res) => {
-    res.render('complaint_form'); 
+    res.render('complaint_form');
 });
 
 
@@ -252,7 +296,7 @@ app.get('/submit_complaint', (req, res) => {
 
 
 app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
-    
+
     const branch = req.params.branch;
     const refId = req.params.refId;
     console.log("FIRST STEP");
@@ -261,10 +305,10 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
 
     try {
         // Step 1: Fetch documents from MongoDB Approved collection using ref_id
-     
-        const complaints = await Complaint.find({ refId: refId});
 
-      
+        const complaints = await Complaint.find({ refId: refId });
+
+
 
         if (complaints.length === 0) {
             return res.status(404).send('No complaints found for this branch and roll number');
@@ -277,31 +321,46 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
 
 
 
-                // Step 2: Insert documents into MongoDB solved collection
-                const now = new Date();
+        // Step 2: Insert documents into MongoDB solved collection
+        const now = new Date();
 
-                const year = now.getFullYear();
-                const month = now.getMonth() + 1;
-                const day = now.getDate();
-        
-                const formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
-        
-                const newComplaint = new Solved({
-            
-                    refid:refId,
-                    solvedDate: formattedDate
-                });
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const day = now.getDate();
 
-                const savedComplaint = await newComplaint.save();
-        
+        const formattedDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+
+        const newComplaint = new Solved({
+
+            refid: refId,
+            solvedDate: formattedDate
+        });
+
+        const savedComplaint = await newComplaint.save();
+
 
         // Step 3: Update status to 'solved' in alldata collection at ref_id
-     
-        const updateResult = await Alldata.updateOne({ refid: refId }, { $set: { status: 'solved' , solvedDate: formattedDate } });
+
+        const updateResult = await Alldata.updateOne({ refid: refId }, { $set: { status: 'solved', solvedDate: formattedDate } });
 
         if (updateResult.modifiedCount === 0) {
             throw new Error('No document found in alldata collection to update');
         }
+
+        const result = await Alldata.findOne({ refid: refId });
+        const email = result.mail || null;
+        if (result) {
+           
+            if (email) {
+                console.log(`The email for refId ${refId} is: ${email}`);
+            } else {
+                console.log(`No email found for refId ${refId}`);
+            }
+        } else {
+            console.log(`No document found with refId ${refId}`);
+        }
+
+
 
 
         // Step 4: Delete one document from approved collection
@@ -311,13 +370,43 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
             throw new Error('No document deleted from complaints collection');
         }
 
-                    console.log('Complaints moved successfully');
+        console.log('Complaints moved successfully');
         res.redirect(`/${branch}`);
+
+
+        
+        const formattedDateTime = moment().format('MMMM Do YYYY, h:mm:ss a');
+
+        // HTML-formatted email content
+        var mailOptions = {
+            from: 'aitamportal@gmail.com',
+            to: `${email}`,
+            subject: 'Complaint Solved',
+            html: `
+        <p>Dear User,</p>
+        <p>Your complaint was solved</p>
+        <p><strong>Reference ID:</strong> ${refId}</p>
+        <p>Date & Time: ${formattedDateTime}</p>
+        <p>Thank you for using our service.</p>
+        <a href="https://complaint-management-system-for-college-2bte.onrender.com/c/qr/${refId}" target="_blank">CHECK-STATUS</a>
+
+        <p>Best regards,<br>AITAM Portal Team</p>
+    `
+        };
+
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
     } catch (err) {
         console.error('Error processing request:', err);
         res.status(500).send('Internal Server Error');
     } finally {
-         console.log("LAST STEP");
+        console.log("LAST STEP");
     }
 });
 
@@ -338,31 +427,31 @@ app.get('/a/all', async (req, res) => {
                 case 'pending':
                     pendingCount++;
                     break;
-                
+
                 case 'solved':
                     solvedCount++;
                     break;
                 default:
-                 
+
                     break;
             }
         });
 
-        res.render('alldata', { 
-            complaints: complaints, 
+        res.render('alldata', {
+            complaints: complaints,
             pendingCount: pendingCount,
             solvedCount: solvedCount
         });
     } catch (error) {
         console.error(error);
-       
+
         res.status(500).send('Internal Server Error');
     }
 });
 
 
 function authenticateBranch(req, res, next) {
-    if (req.session.authenticatedHod){
+    if (req.session.authenticatedHod) {
         next();
     } else {
         const branch = req.params.branch;
@@ -373,10 +462,10 @@ function authenticateBranch(req, res, next) {
 app.post('/:branch/login', (req, res) => {
     const password = req.body.password;
     const branch = req.params.branch;
-   
-    if (password === '12345') { 
-        req.session.authenticatedHod = true; 
-   
+
+    if (password === '12345') {
+        req.session.authenticatedHod = true;
+
         res.redirect(`/${branch}`);
     } else {
 
@@ -386,18 +475,18 @@ app.post('/:branch/login', (req, res) => {
 
 app.get('/:branch', authenticateBranch, async (req, res) => {
     const validBranches = ['csm', 'cse', 'ece', 'csd', 'eee', 'mec', 'civil', 'alldata', 'mba', 'mt', 'it'];
-    const branch = req.params.branch.toLowerCase(); 
-    
+    const branch = req.params.branch.toLowerCase();
+
     if (!validBranches.includes(branch)) {
         res.status(400).send('Invalid entry');
         return;
     }
-    
+
     try {
-     
+
         const complaints = await Complaint.find({ branch: branch }).exec();
 
-      
+
         res.render('table', { branch: branch, complaints: complaints });
     } catch (err) {
         console.error('Error fetching complaints:', err);
@@ -418,8 +507,8 @@ app.get('/c/check', (req, res) => {
 
 
 
-app.get('/c/qr/:refId',async (req, res) => {
-   
+app.get('/c/qr/:refId', async (req, res) => {
+
 
     const refId = req.params.refId;
 
@@ -439,7 +528,7 @@ app.get('/c/qr/:refId',async (req, res) => {
         console.error('Error finding complaint:', err);
         return res.status(500).send('Internal Server Error');
     }
-   
+
 });
 
 
