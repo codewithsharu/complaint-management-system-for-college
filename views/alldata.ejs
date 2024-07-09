@@ -118,19 +118,7 @@ a {
     
     <h4 style="margin-top: 60px;">Complaints Dashboard</h1>
 
-    <div class="dashboard-section" id="processing-section">
-        <div class="section-header" onclick="toggleSection('processing')">Processing Complaints <span class="badge bg-default" style="color:white; background-color: red;font-size:medium; padding:6px; border-radius:50% ;"><%=    processingCount%></span></div>
-        <button class="close-btn" onclick="closeSection('processing')">CLOSE</button>
-        <div id="processing-content">
-            <% complaints.filter(complaint => complaint.status === 'processing').forEach(function(complaint) { %>
-                <div class="complaint processing">
-                    <strong>Reference ID:</strong> <%= complaint.refid %><br>
-                    <strong>Message:</strong> <%= complaint.message %><br>
-                    <strong>Created At:</strong> <%= complaint.createdDate %><br>
-                </div>
-            <% }); %>
-        </div>
-    </div>
+
 
     <div class="dashboard-section" id="pending-section">
         <div class="section-header" onclick="toggleSection('pending')">Pending Complaints <span class="badge bg-default" style="color:white; background-color: red; font-size:medium; padding:6px; border-radius:50% ; "><%=    pendingCount%></span></div>

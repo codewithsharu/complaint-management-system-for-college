@@ -6,20 +6,20 @@
     <title>Admin Panel - Complaints</title>
     <style>
         body {
-        
             margin: 0;
             padding: 0;
             background-color: #fff; /* White background */
             color: #000; /* Black text */
+            font-family: Arial, sans-serif; /* Default font */
         }
 
         .container {
             max-width: 100%;
-       
             background-color: #f0f0f0; /* Light gray background */
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Box shadow */
             padding: 20px;
+            margin-top: 20px;
         }
 
         h1 {
@@ -45,6 +45,10 @@
             color: #fff; /* White text */
         }
 
+        td:nth-child(2) { /* Assuming Message is the second column */
+    width: 70%; /* Set the width to 70% of the table */
+}
+
         tr:nth-child(even) {
             background-color: #ecf0f1; /* Light gray background for even rows */
         }
@@ -65,132 +69,117 @@
         button:hover {
             background-color: #2980b9; /* Darker blue on hover */
         }
+
         .cs {
-  border-radius: .25rem;
-  text-transform: uppercase;
-  font-style: normal;
-  font-weight: 400;
-  padding-left: 25px;
-  padding-right: 25px;
-  color: #fff;
-  -webkit-clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
-  clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
-  height: 40px;
-  font-size: 0.7rem;
-  line-height: 14px;
-  letter-spacing: 1.2px;
-  transition: .2s .1s;
-  background-image: linear-gradient(90deg,#1c1c1c,#6220fb);
-  border: 0 solid;
-  overflow: hidden;
-}
+            border-radius: .25rem;
+            text-transform: uppercase;
+            font-style: normal;
+            font-weight: 400;
+            padding-left: 25px;
+            padding-right: 25px;
+            color: #fff;
+            -webkit-clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
+            clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
+            height: 40px;
+            font-size: 0.7rem;
+            line-height: 14px;
+            letter-spacing: 1.2px;
+            transition: .2s .1s;
+            background-image: linear-gradient(90deg,#1c1c1c,#6220fb);
+            border: 0 solid;
+            overflow: hidden;
+        }
 
-.cs:hover {
-  cursor: pointer;
-  transition: all .3s ease-in;
-  padding-right: 30px;
-  padding-left: 30px;
-}
+        .cs:hover {
+            cursor: pointer;
+            transition: all .3s ease-in;
+            padding-right: 30px;
+            padding-left: 30px;
+        }
 
+        /* Responsive Styles */
+        @media only screen and (max-width: 600px) {
+            table {
+                font-size: 14px;
+            }
 
+            th, td {
+                padding: 6px;
+            }
 
-td:nth-child(3) {
-    width: 50%; /* Adjust the percentage as needed */
-}
-
-td:nth-child(6) {
-    width: 10%; /* Adjust the percentage as needed */
-}
-
-td:nth-child(4) {
-    width: 10%; /* Adjust the percentage as needed */
-}
-
-td:nth-child(5) {
-    width: 10%; /* Adjust the percentage as needed */
-}
-
-
-td:nth-child(2) {
-    width: 10%; /* Adjust the percentage as needed */
-}
-
-
-td:nth-child(1) {
-    width: 10%; /* Adjust the percentage as needed */
-}
-/* Responsive Styles */
-@media only screen and (max-width: 600px) {
-    table {
-        font-size: 14px;
-    }
-
-    th, td {
-        padding: 6px;
-    }
-
-    button {
-        padding: 4px 12px;
-        font-size: 12px;
-    }
-}
-
-
+            button {
+                padding: 4px 12px;
+                font-size: 12px;
+            }
+        }
 
         a {
-    text-decoration: none;
-    color: inherit;
-}
-
-
-        
+            text-decoration: none;
+            color: inherit;
+        }
     </style>
 </head>
 <body>
-    <header style=" left:0; top:0; width: 100%;">
+    <header style="left:0; top:0; width: 100%;">
         <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #EEF2F7; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
             <img src="../public/images/AITAM Logo.png" alt="AITAM Logo" style="width: 200px;">
             <ul style="list-style: none; display: flex; gap: 20px; margin: 0;">
                 <button class="cs"><a href="https://complaint-management-system-for-college-2bte.onrender.com/">Home</a></button>
                 <button class="cs"><a href="https://complaint-management-system-for-college-2bte.onrender.com/a/all">Dashboard</a></button>
-
             </ul>
         </nav>
+        <form id="searchForm" style="text-align: center; margin-top: 20px;">
+            <label for="refId">Search by Ref Id:</label>
+            <input type="text" id="refId" name="refId" placeholder="Enter Ref Id">
+            <button type="submit">Search</button>
+        </form>
     </header>
-    <h1 style="text-align: center;  color: #333;">Admin Panel - Complaints</h1>
-    <div class="container">       
+   
+    <div class="container">
         <table border="1">
             <thead>
                 <tr>
-                    <th>Type</th>
-                    <th>Roll Number</th>
+                  
+                    <th>Ref Id</th>
                     <th>Message</th>
                     <th>Created At</th>
                     <th>Branch</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <% complaints.forEach(function(complaint) { %>
                     <tr>
-                        <!-- <td><%= complaint.id %></td> -->
-                        <td><%= complaint. complaintType %></td> 
+                     
 
-                        <td><%= complaint.rollNumber %></td>
+                        <td><%= complaint.refId %></td>
                         <td><%= complaint.complaintMessage %></td>
                         <td><%= complaint.createdDate %></td>
                         <!-- <td><%= complaint.status %></td> -->
                         <td><%= complaint.branch %></td>
-                        <td>
-                            <form action="https://complaint-management-system-for-college-2bte.onrender.com/a/<%= complaint.branch %>/<%= complaint.rollNumber %>/<%= complaint.refId %>" method="get">
-                                <button type="submit">Approve</button>
-                            </form>
-                        </td>
+                        
                        
                     </tr>
                 <% }); %>
             </tbody>
         </table>
     </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const refId = document.getElementById('refId').value.trim().toUpperCase(); // Trim whitespace and convert to uppercase
+
+            const tableRows = document.querySelectorAll('tbody tr');
+
+            tableRows.forEach(row => {
+                const tdRefId = row.querySelector('td:nth-child(2)').textContent.trim().toUpperCase(); // Assuming Ref Id is in the second column
+                if (tdRefId.includes(refId)) {
+                    row.style.display = ''; // Show row if refId matches
+                } else {
+                    row.style.display = 'none'; // Hide row if refId does not match
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -88,6 +88,7 @@ app.post('/submit_complaint', async (req, res) => {
             refid: refId,
             status: 'pending',
             message:complaintMessage,
+            rollNumber: rollNumber,
             createdDate:  formattedDate
         });
         await newData.save();
@@ -250,80 +251,6 @@ app.get('/submit_complaint', (req, res) => {
 
 
 
-app.get('/a/:branch/:roll/:ref_id', async (req, res) => {
-    const branch = req.params.branch;
-    const rollNumber = req.params.roll;
-    const refId = req.params.ref_id;
-
-    console.log(refId);
-
-    try {
-        // Step 1: Fetch documents from MongoDB complaints collection using ref_id
-     
-        const complaints = await Complaint.find({ refId: refId});
-
-      
-
-        if (complaints.length === 0) {
-            return res.status(404).send('No complaints found for this branch and roll number');
-        }
-
-        console.log("FIRST STEP");
-        console.log(complaints);
-        console.log("SUCESS 1");
-
-
-
-
-                // Step 2: Insert documents into MongoDB approved collection
-            const insertDocs = complaints.map(complaint => ({
-                branch: complaint.branch,
-                rollNumber: complaint.rollNumber,
-                complaintMessage: complaint.complaintMessage,
-                refId: complaint.refId,
-                complaintType: complaint.complaintType
-            }));
-
-            console.log(complaints);
-
-            try {
-                const insertResult = await Approved.insertMany(insertDocs);
-                console.log(`Documents inserted successfully into Approved: ${insertResult}`);
-              
-                console.log("Inserted into Approved");
-            } catch (err) {
-                console.error(`Error inserting documents into Approved: ${err}`);
-                throw err; 
-            }
-
-        // Step 3: Update status to 'processing' in alldata collection at ref_id
-     
-        const updateResult = await Alldata.updateOne({ refid: refId }, { $set: { status: 'processing' } });
-
-        if (updateResult.modifiedCount === 0) {
-            throw new Error('No document found in alldata collection to update');
-        }
-
-
-        // Step 4: Delete one document from complaints collection
-        const deleteResult = await Complaint.deleteOne({ refId: refId });
-
-        if (deleteResult.deletedCount === 0) {
-            throw new Error('No document deleted from complaints collection');
-        }
-
-                    console.log('Complaints moved successfully');
-        res.redirect('/admin');
-    } catch (err) {
-        console.error('Error processing request:', err);
-        res.status(500).send('Internal Server Error');
-    } finally {
-         console.log("LAST STEP");
-    }
-});
-
-
-
 app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
     
     const branch = req.params.branch;
@@ -335,7 +262,7 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
     try {
         // Step 1: Fetch documents from MongoDB Approved collection using ref_id
      
-        const complaints = await Approved.find({ refId: refId});
+        const complaints = await Complaint.find({ refId: refId});
 
       
 
@@ -378,7 +305,7 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
 
 
         // Step 4: Delete one document from approved collection
-        const deleteResult = await Approved.deleteOne({ refId: refId });
+        const deleteResult = await Complaint.deleteOne({ refId: refId });
 
         if (deleteResult.deletedCount === 0) {
             throw new Error('No document deleted from complaints collection');
@@ -403,7 +330,7 @@ app.get('/a/all', async (req, res) => {
         console.log(complaints);
 
         let pendingCount = 0;
-        let processingCount = 0;
+        // let processingCount = 0;
         let solvedCount = 0;
 
         complaints.forEach(complaint => {
@@ -411,9 +338,7 @@ app.get('/a/all', async (req, res) => {
                 case 'pending':
                     pendingCount++;
                     break;
-                case 'processing':
-                    processingCount++;
-                    break;
+                
                 case 'solved':
                     solvedCount++;
                     break;
@@ -426,7 +351,6 @@ app.get('/a/all', async (req, res) => {
         res.render('alldata', { 
             complaints: complaints, 
             pendingCount: pendingCount,
-            processingCount: processingCount,
             solvedCount: solvedCount
         });
     } catch (error) {
@@ -471,7 +395,7 @@ app.get('/:branch', authenticateBranch, async (req, res) => {
     
     try {
      
-        const complaints = await Approved.find({ branch: branch }).exec();
+        const complaints = await Complaint.find({ branch: branch }).exec();
 
       
         res.render('table', { branch: branch, complaints: complaints });

@@ -20,6 +20,7 @@ const alldataSchema = new mongoose.Schema({
     refid: { type: String, required: true, unique: true },
     status: { type: String, default: 'pending' },
     message:{type:String},
+    rollNumber:{type:String},
     createdDate: {type:String},
     solvedDate: {type:String}
 });
@@ -30,19 +31,19 @@ const Alldata = mongoose.model('Alldata', alldataSchema);
 // ?????????
 
 
-// / Define Approved schema
-const approvedSchema = new mongoose.Schema({
-    branch: { type: String, required: true },
-    rollNumber: { type: String, required: true },
-    complaintType: { type: String, required: true },
-    complaintMessage: { type: String, required: true },
-    refId: { type: String, required: true }
+// // / Define Approved schema
+// const approvedSchema = new mongoose.Schema({
+//     branch: { type: String, required: true },
+//     rollNumber: { type: String, required: true },
+//     complaintType: { type: String, required: true },
+//     complaintMessage: { type: String, required: true },
+//     refId: { type: String, required: true }
    
-});
+// });
 
 
 
-const Approved = mongoose.model('Approved', approvedSchema);
+// const Approved = mongoose.model('Approved', approvedSchema);
 
 const solvedSchema = new mongoose.Schema({
     refid: { type: String, required: true, unique: true },
@@ -51,4 +52,4 @@ const solvedSchema = new mongoose.Schema({
 
 const Solved = mongoose.model('Solved', solvedSchema);
 
-module.exports = { Complaint, Alldata ,Approved,Solved };
+module.exports = { Complaint, Alldata ,Solved };
