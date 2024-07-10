@@ -226,6 +226,10 @@ app.get('/st', (req, res) => {
     res.render('select_table');
 });
 
+app.get('/about', (req, res) => {
+    res.render('about');
+});
+
 app.get('/st/:branch', (req, res) => {
     const branch = req.params.branch;
     res.render('complaint_form', { branch: branch });
@@ -382,7 +386,7 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
             from: 'aitamportal@gmail.com',
             to: `${email}`,
             subject: 'Complaint Solved',
-            html: `
+            html: `n
         <p>Dear User,</p>
         <p>Your complaint was solved</p>
         <p><strong>Reference ID:</strong> ${refId}</p>
