@@ -19,11 +19,39 @@ var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'aitam.grievance.cell@gmail.com',
-        pass: 'jtka xyob ybnc ngvu'
+        pass: 'plzs tfdm peob pjdd'
     }
 });
 
 
+app.get('/gc/c', (req, res) => {
+  
+    // Get current date and time formatted
+    const formattedDateTime = moment().format('MMMM Do YYYY, h:mm:ss a');
+
+    // HTML-formatted email content
+    var mailOptions = {
+        from: 'aitam.grievance.cell@gmail.com',
+        to: 'tirumalareddi712@gmail.com',
+        subject: 'Complaint Registration Confirmation',
+        html: `
+    <p>CHECKKING!!!!!!,</p>
+   
+`
+    };
+
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+
+    res.send("done");
+
+});
 
 
 const mongoURI = 'mongodb+srv://wbest5991:BuXQEithRk1oSOrW@cluster0.vnkbvtr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
@@ -118,7 +146,7 @@ app.post('/submit_complaint', async (req, res) => {
 
         // HTML-formatted email content
         var mailOptions = {
-            from: 'aitamportal@gmail.com',
+            from: 'aitam.grievance.cell@gmail.com',
             to: `${email}`,
             subject: 'Complaint Registration Confirmation',
             html: `
@@ -171,9 +199,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
-// app.get('/', (req, res) => {
-//     res.render('home');
-// });
 
 
 app.get('/', async (req, res) => {
@@ -383,7 +408,7 @@ app.post('/mark_as_solved/:branch/:refId', async (req, res) => {
 
         // HTML-formatted email content
         var mailOptions = {
-            from: 'aitamportal@gmail.com',
+            from: 'aitam.grievance.cell@gmail.com',
             to: `${email}`,
             subject: 'Complaint Solved',
             html: `n
