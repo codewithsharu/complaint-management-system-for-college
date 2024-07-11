@@ -18,8 +18,8 @@ const moment = require('moment');
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'aitamportal@gmail.com',
-        pass: 'qcme sudk hmtj rdox'
+        user: 'aitam.grievance.cell@gmail.com',
+        pass: 'jtka xyob ybnc ngvu'
     }
 });
 
