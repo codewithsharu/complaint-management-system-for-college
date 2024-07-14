@@ -1,3 +1,5 @@
+<!-- complaint_form.ejs -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,10 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complaint Form</title>
     <style>
-
-        
         /* General body styles */
-        .body1 {
+        body {
             font-family: Arial, sans-serif;
             margin: 0;
             display: flex;
@@ -20,7 +20,7 @@
         }
 
         /* Form container styles */
-        form {
+        .form {
             width: 80%;
             max-width: 400px;
             padding: 20px;
@@ -32,49 +32,33 @@
 
         /* Title styles */
         .title {
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: -1px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  padding-left: 30px;
-  color: #00bfff;
-}
-
-.title::before {
-  width: 18px;
-  height: 18px;
-}
-
-.title::after {
-  width: 18px;
-  height: 18px;
-  animation: pulse 1s linear infinite;
-}
-
-.title::before,
-.title::after {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  left: 0px;
-  background-color: #00bfff;
-}
-
-        /* Input and select styles */
-        .input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -1px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding-left: 30px;
+            color: #00bfff;
         }
 
+        .title::before,
+        .title::after {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            left: 0px;
+            background-color: #00bfff;
+        }
+
+        .title::after {
+            animation: pulse 1s linear infinite;
+        }
+
+        /* Input and select styles */
+        .input,
         select {
             width: 100%;
             padding: 8px;
@@ -113,63 +97,53 @@
             background-color: #0056b3;
         }
 
-        /* Responsive styles for smaller screens */
-        @media only screen and (max-width: 600px) {
-            body {
-                justify-content: flex-start; /* Align content at the top */
-                padding-top: 15px; /* Maintain space above the form */
-                padding-bottom: 100px;
-                }
-
-            form {
-                margin-top: 20px; /* Adjust margin-top to create space */
-            }
+        /* Footer styles */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
 
-        
-@keyframes pulse {
-  from {
-    transform: scale(0.9);
-    opacity: 1;
-  }
+        /* Custom button styles */
+        .cs {
+            border-radius: .25rem;
+            text-transform: uppercase;
+            font-style: normal;
+            font-weight: 400;
+            padding-left: 25px;
+            padding-right: 25px;
+            color: #fff;
+            -webkit-clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
+            clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
+            height: 40px;
+            font-size: 0.7rem;
+            line-height: 14px;
+            letter-spacing: 1.2px;
+            transition: .2s .1s;
+            background-image: linear-gradient(90deg,#1c1c1c,#6220fb);
+            border: 0 solid;
+            overflow: hidden;
+        }
 
-  to {
-    transform: scale(1.8);
-    opacity: 0;
-  }
-}
+        .cs:hover {
+            cursor: pointer;
+            transition: all .3s ease-in;
+            padding-right: 30px;
+            padding-left: 30px;
+        }
 
-.cs {
-  border-radius: .25rem;
-  text-transform: uppercase;
-  font-style: normal;
-  font-weight: 400;
-  padding-left: 25px;
-  padding-right: 25px;
-  color: #fff;
-  -webkit-clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
-  clip-path: polygon(0 0,0 0,100% 0,100% 0,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 100%);
-  height: 40px;
-  font-size: 0.7rem;
-  line-height: 14px;
-  letter-spacing: 1.2px;
-  transition: .2s .1s;
-  background-image: linear-gradient(90deg,#1c1c1c,#6220fb);
-  border: 0 solid;
-  overflow: hidden;
-}
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-
-.cs:hover {
-  cursor: pointer;
-  transition: all .3s ease-in;
-  padding-right: 30px;
-  padding-left: 30px;
-}
+        /* Animation for pulse effect */
+        @keyframes pulse {
+            from {
+                transform: scale(0.9);
+                opacity: 1;
+            }
+            to {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -184,16 +158,21 @@ a {
         </nav>
     </header>
 
-    <div style="scale: 0.8; ">
+    <div style="transform: scale(0.8);">
         <form class="form" action="/submit_complaint" method="post">
             <p class="title">Register </p>
             <p class="message">branch : <%= branch %> </p>
-            <input class="input" type="hidden" name="branch" value="<%= branch%>">
+            <input class="input" type="hidden" name="branch" value="<%= branch %>">
             <label for="rollNumber">Enter Roll Number:</label>
             <input class="input" type="text" id="rollNumber" name="rollNumber" required>
             <br>
             <label for="email">Email :</label>
-            <input class="input" type="text" id="emailr" name="email" required>
+            <% if (email) { %>
+                <input class="input" type="text" id="emailr" name="email" value="<%= email %>" required style="border: 2.5px solid green;">
+                <% } else { %>
+                <input class="input" type="text" id="emailr" name="email" placeholder="Please verify your email" required disabled style="border: 1px solid red; color: red;">
+                <button class="btn-verify" style="background-color: #4285F4; color: #ffffff; border: none; padding: 10px 20px; cursor: pointer;" onclick="window.location.href='/auth/google'">Verify with College Mail</button>
+            <% } %>
             <br>
             <label for="complaintType">Select Complaint Type:</label>
             <select id="complaintType" name="complaintType" required>
@@ -208,52 +187,43 @@ a {
                 <option value="library">Library and Resource Center Feedback</option>
                 <option value="health">Health and Safety Concerns</option>
                 <option value="suggestions">General Suggestions and Feedback</option>
-                
             </select>
             <br>
             <label for="complaintMessage">Enter Complaint:</label>
             <textarea id="complaintMessage" name="complaintMessage" rows="4" cols="50" required></textarea>
             <p id="wordCount">Words remaining: 70</p>
                     
-            <button class="submit" type="submit">Submit Complaint</button>
+            <% if (email) { %>
+                <button class="submit" type="submit">Submit Complaint</button>
+            <% } else { %>
+                <button class="submit" type="button" style="background-color: lightgray;" disabled>Submit Complaint</button>
+            <% } %>
         </form>
     </div>
-
-   
 </div>
-
-
-
 
 <footer style="position:fixed; bottom: 0; left: 0; right: 0; ">
     <%- include('footer') %>
-  </footer>
-    
-  
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var textarea = document.getElementById("complaintMessage");
-            var wordCount = document.getElementById("wordCount");
+</footer>
 
-            textarea.addEventListener("input", function() {
-                var words = textarea.value.trim().split(/\s+/);
-                var remainingWords = 70 - words.length;
-                wordCount.textContent = "Words remaining: " + remainingWords;
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var textarea = document.getElementById("complaintMessage");
+        var wordCount = document.getElementById("wordCount");
 
-                if (remainingWords < 0) {
-                    // Remove excess words
-                    textarea.value = words.slice(0, 70).join(' ');
-                    wordCount.textContent = "Words remaining: 0";
-                }
-            });
+        textarea.addEventListener("input", function() {
+            var words = textarea.value.trim().split(/\s+/);
+            var remainingWords = 70 - words.length;
+            wordCount.textContent = "Words remaining: " + remainingWords;
+
+            if (remainingWords < 0) {
+                // Remove excess words
+                textarea.value = words.slice(0, 70).join(' ');
+                wordCount.textContent = "Words remaining: 0";
+            }
         });
-    </script>
+    });
+</script>
 
-   
 </body>
 </html>
-
-
-
-
-

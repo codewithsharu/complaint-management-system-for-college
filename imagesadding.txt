@@ -1,4 +1,0 @@
-app.use('/public/images/', express.static('./public/images'));
-
-
-.

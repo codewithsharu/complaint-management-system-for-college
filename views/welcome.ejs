@@ -1,0 +1,33 @@
+
+<!-- welcome.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        /* Example of a stylish animation */
+        .welcome-text {
+            font-size: 24px;
+            animation: slide-in 1s ease-out forwards;
+        }
+
+        @keyframes slide-in {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-text">
+        Welcome <%= userEmail %>
+    </div>
+</body>
+</html>
