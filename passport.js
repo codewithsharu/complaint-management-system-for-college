@@ -11,7 +11,7 @@ passport.deserializeUser(function(user, done) {
 passport.use(new GoogleStrategy({ 
 	clientID:process.env.CLIENT_ID, // Your Credentials here. 
 	clientSecret:process.env.CLIENT_SECRET, // Your Credentials here. 
-	callbackURL:"http://localhost:3000/auth/google/callback", 
+	callbackURL:"https://complaint-management-system-for-college-2bte.onrender.com/auth/google/callback", 
 	passReqToCallback:true
 }, 
 function(request, accessToken, refreshToken, profile, done) { 
