@@ -49,6 +49,17 @@ var transporter = nodemailer.createTransport({
 
 // CHECK GA
 
+app.get('/logout', (req, res) => {
+
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send('Error logging out');
+        }
+        res.redirect('/');
+    });
+});
+
+
 app.get('/displayEmail', (req, res) => {
     const email = req.session.verifiedemail;
     res.render('displayEmail', { email });
