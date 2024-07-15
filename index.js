@@ -55,7 +55,7 @@ app.get('/logout', (req, res) => {
         if (err) {
             return res.status(500).send('Error logging out');
         }
-        res.redirect('https://mail.google.com/mail/u/0/?logout&hl=en');
+        res.redirect('https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=https://complaint-management-system-for-college-2bte.onrender.com/');
         // res.redirect('/');
     });
 });
