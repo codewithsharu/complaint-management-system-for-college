@@ -168,7 +168,8 @@
             <br>
             <label for="email">Email :</label>
             <% if (email) { %>
-                <input class="input" type="text" id="emailr" name="email" value="<%= email %>" required style="border: 2.5px solid green;">
+                <input class="input" type="text" id="emailr" name="email" value="<%= email %>" readonly required style="border: 2.5px solid green; cursor: not-allowed;">
+
                 <% } else { %>
                 <input class="input" type="text" id="emailr" name="email" placeholder="Please verify your email" required disabled style="border: 1px solid red; color: red;">
                 <button class="btn-verify" style="background-color: #4285F4; color: #ffffff; border: none; padding: 10px 20px; cursor: pointer;" onclick="window.location.href='/auth/google'">Verify with College Mail</button>
